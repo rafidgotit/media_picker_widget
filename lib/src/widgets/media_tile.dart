@@ -13,7 +13,8 @@ class MediaTile extends StatefulWidget {
     @required this.onSelected,
     @required this.isSelected,
     this.decoration,
-  }):assert(media!=null), super(key: key);
+  })  : assert(media != null),
+        super(key: key);
 
   final AssetEntity media;
   final Function(bool, Media) onSelected;
@@ -24,7 +25,8 @@ class MediaTile extends StatefulWidget {
   _MediaTileState createState() => _MediaTileState();
 }
 
-class _MediaTileState extends State<MediaTile> with AutomaticKeepAliveClientMixin, TickerProviderStateMixin{
+class _MediaTileState extends State<MediaTile>
+    with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
   bool selected;
 
   Media media;
@@ -35,73 +37,89 @@ class _MediaTileState extends State<MediaTile> with AutomaticKeepAliveClientMixi
 
   @override
   void initState() {
-    _animationController = AnimationController(vsync: this, duration: _duration);
-    _animation = Tween<double>(begin: 1.0, end: 1.3).animate(_animationController);
-    selected = widget.isSelected??false;
-    if(selected) _animationController.forward();
+    _animationController =
+        AnimationController(vsync: this, duration: _duration);
+    _animation =
+        Tween<double>(begin: 1.0, end: 1.3).animate(_animationController);
+    selected = widget.isSelected ?? false;
+    if (selected) _animationController.forward();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    if (media!=null) {
+    if (media != null) {
       return Padding(
         padding: const EdgeInsets.all(0.5),
         child: Stack(
           children: [
             Positioned.fill(
-              child: media.thumbnail!=null ? InkWell(
-                onTap: (){
-                  setState(()=>selected = !selected);
-                  if(selected) _animationController.forward();
-                  else _animationController.reverse();
-                  widget.onSelected(selected, media);
-                },
-                child: Stack(
-                  children: [
-                    Positioned.fill(
-                      child: ClipRect(
-                        child: AnimatedBuilder(
-                          animation: _animation,
-                          builder: (context, child) {
-                            return Transform.scale(
-                              scale: _animation.value,
-                              child: Image.memory(
-                                media.thumbnail,
-                                fit: BoxFit.cover,
-                              ),
-                            );
-                          }
-                        ),
-                      ),
-                    ),
-                    Positioned.fill(
-                      child: AnimatedOpacity(
-                        opacity: selected ? 1 : 0,
-                        curve: Curves.easeOut,
-                        duration: _duration,
-                        child: ClipRect(
-                          child: BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: widget.decoration.blurStrength, sigmaY: widget.decoration.blurStrength),
-                            child: Container(color: Colors.black26,),
+              child: media.thumbnail != null
+                  ? InkWell(
+                      onTap: () {
+                        setState(() => selected = !selected);
+                        if (selected)
+                          _animationController.forward();
+                        else
+                          _animationController.reverse();
+                        widget.onSelected(selected, media);
+                      },
+                      child: Stack(
+                        children: [
+                          Positioned.fill(
+                            child: ClipRect(
+                              child: AnimatedBuilder(
+                                  animation: _animation,
+                                  builder: (context, child) {
+                                    return Transform.scale(
+                                      scale: _animation.value,
+                                      child: Image.memory(
+                                        media.thumbnail,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    );
+                                  }),
+                            ),
                           ),
-                        ),
+                          Positioned.fill(
+                            child: AnimatedOpacity(
+                              opacity: selected ? 1 : 0,
+                              curve: Curves.easeOut,
+                              duration: _duration,
+                              child: ClipRect(
+                                child: BackdropFilter(
+                                  filter: ImageFilter.blur(
+                                      sigmaX: widget.decoration.blurStrength,
+                                      sigmaY: widget.decoration.blurStrength),
+                                  child: Container(
+                                    color: Colors.black26,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          if (widget.media.type == AssetType.video)
+                            Align(
+                              alignment: Alignment.bottomRight,
+                              child: Padding(
+                                padding: EdgeInsets.only(right: 5, bottom: 5),
+                                child: Icon(
+                                  Icons.videocam,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    )
+                  : Center(
+                      child: Icon(
+                        Icons.error_outline,
+                        color: Colors.grey.shade400,
+                        size: 40,
                       ),
                     ),
-                    if (widget.media.type == AssetType.video) Align(
-                      alignment: Alignment.bottomRight,
-                      child: Padding(
-                        padding: EdgeInsets.only(right: 5, bottom: 5),
-                        child: Icon(
-                          Icons.videocam,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ) : Center(child: Icon(Icons.error_outline, color: Colors.grey.shade400, size: 40,),),
             ),
             Align(
               alignment: Alignment.topRight,
@@ -110,14 +128,17 @@ class _MediaTileState extends State<MediaTile> with AutomaticKeepAliveClientMixi
                 child: AnimatedOpacity(
                   curve: Curves.easeOut,
                   duration: _duration,
-                  opacity: selected? 1 : 0,
+                  opacity: selected ? 1 : 0,
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor,
-                      shape: BoxShape.circle
-                    ),
+                        color: Theme.of(context).primaryColor,
+                        shape: BoxShape.circle),
                     padding: const EdgeInsets.all(5),
-                    child: Icon(Icons.done, size: 16, color: Colors.white,),
+                    child: Icon(
+                      Icons.done,
+                      size: 16,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
@@ -126,8 +147,11 @@ class _MediaTileState extends State<MediaTile> with AutomaticKeepAliveClientMixi
         ),
       );
     } else {
-      convertToMedia(media: widget.media).then((_media) => setState(()=>media = _media));
-      return LoadingWidget(decoration: widget.decoration,);
+      convertToMedia(media: widget.media)
+          .then((_media) => setState(() => media = _media));
+      return LoadingWidget(
+        decoration: widget.decoration,
+      );
     }
   }
 
@@ -146,8 +170,8 @@ Future<Media> convertToMedia({@required AssetEntity media}) async {
   convertedMedia.creationTime = media.createDateTime;
 
   MediaType mediaType;
-  if(media.type == AssetType.video) mediaType = MediaType.video;
-  if(media.type == AssetType.image) mediaType = MediaType.image;
+  if (media.type == AssetType.video) mediaType = MediaType.video;
+  if (media.type == AssetType.image) mediaType = MediaType.image;
   convertedMedia.mediaType = mediaType;
 
   return convertedMedia;

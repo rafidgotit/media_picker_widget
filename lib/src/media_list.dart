@@ -14,6 +14,7 @@ class MediaList extends StatefulWidget {
     this.decoration,
     this.scrollController,
   });
+
   final AssetPathEntity album;
   final HeaderController headerController;
   final List<Media> previousList;
@@ -36,9 +37,10 @@ class _MediaListState extends State<MediaList> {
   @override
   void initState() {
     album = widget.album;
-    if(widget.mediaCount==MediaCount.multiple) {
+    if (widget.mediaCount == MediaCount.multiple) {
       selectedMedias.addAll(widget.previousList);
-      WidgetsBinding.instance.addPostFrameCallback((_) => widget.headerController.updateSelection(selectedMedias));
+      WidgetsBinding.instance.addPostFrameCallback(
+          (_) => widget.headerController.updateSelection(selectedMedias));
     }
     _fetchNewMedia();
     super.initState();
@@ -55,7 +57,8 @@ class _MediaListState extends State<MediaList> {
       child: GridView.builder(
         controller: widget.scrollController,
         itemCount: _mediaList.length,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: widget.decoration.columnCount),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: widget.decoration.columnCount),
         itemBuilder: (BuildContext context, int index) {
           return _mediaList[index];
         },
@@ -63,9 +66,9 @@ class _MediaListState extends State<MediaList> {
     );
   }
 
-  _resetAlbum(){
-    if(album!=null) {
-      if(album.id!=widget.album.id){
+  _resetAlbum() {
+    if (album != null) {
+      if (album.id != widget.album.id) {
         _mediaList.clear();
         album = widget.album;
         currentPage = 0;
@@ -92,9 +95,12 @@ class _MediaListState extends State<MediaList> {
       for (var asset in media) {
         temp.add(MediaTile(
           media: asset,
-          onSelected: (isSelected, media){
-            if(isSelected) setState(()=>selectedMedias.add(media));
-            else setState(()=> selectedMedias.removeWhere((_media) => _media.id==media.id));
+          onSelected: (isSelected, media) {
+            if (isSelected)
+              setState(() => selectedMedias.add(media));
+            else
+              setState(() => selectedMedias
+                  .removeWhere((_media) => _media.id == media.id));
             widget.headerController.updateSelection(selectedMedias);
           },
           isSelected: isPreviouslySelected(asset),
@@ -106,16 +112,15 @@ class _MediaListState extends State<MediaList> {
         _mediaList.addAll(temp);
         currentPage++;
       });
-
     } else {
       PhotoManager.openSetting();
     }
   }
 
-  bool isPreviouslySelected(AssetEntity media){
+  bool isPreviouslySelected(AssetEntity media) {
     bool isSelected = false;
-    for(var asset in selectedMedias){
-      if(asset.id==media.id) isSelected=true;
+    for (var asset in selectedMedias) {
+      if (asset.id == media.id) isSelected = true;
     }
     return isSelected;
   }

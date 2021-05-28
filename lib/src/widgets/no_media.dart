@@ -9,9 +9,15 @@ class NoMedia extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.image_not_supported_outlined, size: 50,),
+            Icon(
+              Icons.image_not_supported_outlined,
+              size: 50,
+            ),
             SizedBox(height: 20),
-            Text('No Images Available', style: TextStyle(fontSize: 20),),
+            Text(
+              'No Images Available',
+              style: TextStyle(fontSize: 20),
+            ),
           ],
         ),
       ),

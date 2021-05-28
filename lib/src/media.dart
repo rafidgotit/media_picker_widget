@@ -1,6 +1,6 @@
 part of media_picker_widget;
 
-class Media{
+class Media {
   File file;
   String id;
   Uint8List thumbnail;

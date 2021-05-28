@@ -16,6 +16,9 @@ import 'src/widgets/media_tile.dart';
 import 'dart:typed_data';
 
 part 'src/media.dart';
+
 part 'src/enums.dart';
+
 part 'src/picker_decoration.dart';
+
 part 'src/media_picker.dart';

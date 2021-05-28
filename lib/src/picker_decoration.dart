@@ -1,6 +1,6 @@
 part of media_picker_widget;
 
-class PickerDecoration{
+class PickerDecoration {
   Widget cancelIcon;
   double blurStrength;
   int columnCount;
