@@ -6,7 +6,7 @@
  A widget that picks media files from storage and allows you to place anywhere in the widget tree. You can place use this widget in dialog, bottomsheet or anywhere as you wish. You can pick single or multiple images or videos. Use `PickerDecoration` class to decorate the UI.
  
 <p>
-  <img src="./resources/demo.gif" width=265/>
+  <img src="https://raw.githubusercontent.com/rafid08/media_picker_widget/master/resources/demo.gif" width=265/>
 </p>
 
 
