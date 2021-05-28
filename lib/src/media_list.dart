@@ -7,9 +7,9 @@ import 'widgets/media_tile.dart';
 
 class MediaList extends StatefulWidget {
   MediaList({
-    @required this.album,
-    @required this.headerController,
-    @required this.previousList,
+    required this.album,
+    required this.headerController,
+    required this.previousList,
     this.mediaCount,
     this.decoration,
     this.scrollController,
@@ -18,9 +18,9 @@ class MediaList extends StatefulWidget {
   final AssetPathEntity album;
   final HeaderController headerController;
   final List<Media> previousList;
-  final MediaCount mediaCount;
-  final PickerDecoration decoration;
-  final ScrollController scrollController;
+  final MediaCount? mediaCount;
+  final PickerDecoration? decoration;
+  final ScrollController? scrollController;
 
   @override
   _MediaListState createState() => _MediaListState();
@@ -29,8 +29,8 @@ class MediaList extends StatefulWidget {
 class _MediaListState extends State<MediaList> {
   List<Widget> _mediaList = [];
   int currentPage = 0;
-  int lastPage;
-  AssetPathEntity album;
+  int? lastPage;
+  AssetPathEntity? album;
 
   List<Media> selectedMedias = [];
 
@@ -39,8 +39,7 @@ class _MediaListState extends State<MediaList> {
     album = widget.album;
     if (widget.mediaCount == MediaCount.multiple) {
       selectedMedias.addAll(widget.previousList);
-      WidgetsBinding.instance.addPostFrameCallback(
-          (_) => widget.headerController.updateSelection(selectedMedias));
+      WidgetsBinding.instance!.addPostFrameCallback((_) => widget.headerController.updateSelection!(selectedMedias));
     }
     _fetchNewMedia();
     super.initState();
@@ -52,13 +51,12 @@ class _MediaListState extends State<MediaList> {
     return NotificationListener<ScrollNotification>(
       onNotification: (ScrollNotification scroll) {
         _handleScrollEvent(scroll);
-        return;
+        return true;
       },
       child: GridView.builder(
         controller: widget.scrollController,
         itemCount: _mediaList.length,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: widget.decoration.columnCount),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: widget.decoration!.columnCount),
         itemBuilder: (BuildContext context, int index) {
           return _mediaList[index];
         },
@@ -68,7 +66,7 @@ class _MediaListState extends State<MediaList> {
 
   _resetAlbum() {
     if (album != null) {
-      if (album.id != widget.album.id) {
+      if (album!.id != widget.album.id) {
         _mediaList.clear();
         album = widget.album;
         currentPage = 0;
@@ -89,7 +87,7 @@ class _MediaListState extends State<MediaList> {
     lastPage = currentPage;
     var result = await PhotoManager.requestPermission();
     if (result) {
-      List<AssetEntity> media = await album.getAssetListPaged(currentPage, 60);
+      List<AssetEntity> media = await album!.getAssetListPaged(currentPage, 60);
       List<Widget> temp = [];
 
       for (var asset in media) {
@@ -99,9 +97,8 @@ class _MediaListState extends State<MediaList> {
             if (isSelected)
               setState(() => selectedMedias.add(media));
             else
-              setState(() => selectedMedias
-                  .removeWhere((_media) => _media.id == media.id));
-            widget.headerController.updateSelection(selectedMedias);
+              setState(() => selectedMedias.removeWhere((_media) => _media.id == media.id));
+            widget.headerController.updateSelection!(selectedMedias);
           },
           isSelected: isPreviouslySelected(asset),
           decoration: widget.decoration,

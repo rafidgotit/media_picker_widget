@@ -8,11 +8,7 @@ import '../media_picker_widget.dart';
 import 'widgets/loading_widget.dart';
 
 class AlbumSelector extends StatefulWidget {
-  AlbumSelector(
-      {@required this.onSelect,
-      @required this.albums,
-      @required this.panelController,
-      @required this.decoration});
+  AlbumSelector({required this.onSelect, required this.albums, required this.panelController, required this.decoration});
 
   final ValueChanged<AssetPathEntity> onSelect;
   final List<AssetPathEntity> albums;
@@ -52,10 +48,7 @@ class _AlbumSelectorState extends State<AlbumSelector> {
 }
 
 class AlbumTile extends StatefulWidget {
-  AlbumTile(
-      {@required this.album,
-      @required this.onSelect,
-      @required this.decoration});
+  AlbumTile({required this.album, required this.onSelect, required this.decoration});
 
   final AssetPathEntity album;
   final VoidCallback onSelect;
@@ -66,7 +59,7 @@ class AlbumTile extends StatefulWidget {
 }
 
 class _AlbumTileState extends State<AlbumTile> {
-  Uint8List albumThumb;
+  Uint8List? albumThumb;
   bool hasError = false;
 
   @override
@@ -95,7 +88,7 @@ class _AlbumTileState extends State<AlbumTile> {
                         ? ClipRRect(
                             borderRadius: BorderRadius.circular(8),
                             child: Image.memory(
-                              albumThumb,
+                              albumThumb!,
                               fit: BoxFit.cover,
                             ),
                           )
@@ -122,10 +115,7 @@ class _AlbumTileState extends State<AlbumTile> {
               ),
               Text(
                 '${widget.album.assetCount}',
-                style: TextStyle(
-                    color: Colors.grey.shade700,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w400),
+                style: TextStyle(color: Colors.grey.shade700, fontSize: 12, fontWeight: FontWeight.w400),
               ),
             ],
           ),
@@ -136,7 +126,7 @@ class _AlbumTileState extends State<AlbumTile> {
 
   _getAlbumThumb(AssetPathEntity album) async {
     List<AssetEntity> media = await album.getAssetListPaged(0, 1);
-    Uint8List _thumbByte = await media[0].thumbDataWithSize(80, 80);
+    Uint8List? _thumbByte = await media[0].thumbDataWithSize(80, 80);
     if (_thumbByte != null)
       setState(() => albumThumb = _thumbByte);
     else

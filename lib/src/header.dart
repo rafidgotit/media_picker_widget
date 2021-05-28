@@ -9,11 +9,11 @@ import 'header_controller.dart';
 
 class Header extends StatefulWidget {
   Header({
-    @required this.selectedAlbum,
-    @required this.onBack,
-    @required this.onDone,
-    @required this.albumController,
-    @required this.controller,
+    required this.selectedAlbum,
+    required this.onBack,
+    required this.onDone,
+    required this.albumController,
+    required this.controller,
     this.mediaCount,
     this.decoration,
   });
@@ -23,8 +23,8 @@ class Header extends StatefulWidget {
   final PanelController albumController;
   final ValueChanged<List<Media>> onDone;
   final HeaderController controller;
-  final MediaCount mediaCount;
-  final PickerDecoration decoration;
+  final MediaCount? mediaCount;
+  final PickerDecoration? decoration;
 
   @override
   _HeaderState createState() => _HeaderState();
@@ -34,14 +34,12 @@ class _HeaderState extends State<Header> with TickerProviderStateMixin {
   List<Media> selectedMedia = [];
 
   var _arrowAnimation;
-  AnimationController _arrowAnimController;
+  AnimationController? _arrowAnimController;
 
   @override
   void initState() {
-    _arrowAnimController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 100));
-    _arrowAnimation =
-        Tween<double>(begin: 0, end: 1).animate(_arrowAnimController);
+    _arrowAnimController = AnimationController(vsync: this, duration: Duration(milliseconds: 100));
+    _arrowAnimation = Tween<double>(begin: 0, end: 1).animate(_arrowAnimController!);
 
     widget.controller.updateSelection = (selectedMediaList) {
       if (widget.mediaCount == MediaCount.multiple)
@@ -51,7 +49,7 @@ class _HeaderState extends State<Header> with TickerProviderStateMixin {
 
     widget.controller.closeAlbumDrawer = () {
       widget.albumController.close();
-      _arrowAnimController.reverse();
+      _arrowAnimController!.reverse();
     };
 
     super.initState();
@@ -66,11 +64,9 @@ class _HeaderState extends State<Header> with TickerProviderStateMixin {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 6),
             child: IconButton(
-                icon: widget.decoration.cancelIcon ??
-                    Icon(Icons.arrow_back_outlined),
+                icon: widget.decoration!.cancelIcon ?? Icon(Icons.arrow_back_outlined),
                 onPressed: () {
-                  if (_arrowAnimation.value == 1)
-                    _arrowAnimController.reverse();
+                  if (_arrowAnimation.value == 1) _arrowAnimController!.reverse();
                   widget.onBack();
                 }),
           ),
@@ -78,8 +74,7 @@ class _HeaderState extends State<Header> with TickerProviderStateMixin {
             flex: 2,
             child: TextButton(
               style: ButtonStyle(
-                overlayColor:
-                    MaterialStateProperty.all(Colors.grey.withOpacity(0.05)),
+                overlayColor: MaterialStateProperty.all(Colors.grey.withOpacity(0.05)),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -87,18 +82,15 @@ class _HeaderState extends State<Header> with TickerProviderStateMixin {
                 children: [
                   AnimatedSwitcher(
                     duration: Duration(milliseconds: 200),
-                    transitionBuilder:
-                        (Widget child, Animation<double> animation) {
+                    transitionBuilder: (Widget child, Animation<double> animation) {
                       return SlideTransition(
                         child: child,
-                        position: Tween<Offset>(
-                                begin: Offset(0.0, -0.5), end: Offset(0.0, 0.0))
-                            .animate(animation),
+                        position: Tween<Offset>(begin: Offset(0.0, -0.5), end: Offset(0.0, 0.0)).animate(animation),
                       );
                     },
                     child: Text(
                       widget.selectedAlbum.name,
-                      style: widget.decoration.albumTitleStyle,
+                      style: widget.decoration!.albumTitleStyle,
                       key: ValueKey<String>(widget.selectedAlbum.id),
                     ),
                   ),
@@ -108,12 +100,8 @@ class _HeaderState extends State<Header> with TickerProviderStateMixin {
                       angle: _arrowAnimation.value * pi,
                       child: Icon(
                         Icons.keyboard_arrow_up_outlined,
-                        size: (widget.decoration.albumTitleStyle?.fontSize) !=
-                                null
-                            ? widget.decoration.albumTitleStyle.fontSize * 1.5
-                            : 20,
-                        color: widget.decoration.albumTitleStyle?.color ??
-                            Theme.of(context).primaryColor,
+                        size: (widget.decoration!.albumTitleStyle?.fontSize) != null ? widget.decoration!.albumTitleStyle!.fontSize! * 1.5 : 20,
+                        color: widget.decoration!.albumTitleStyle?.color ?? Theme.of(context).primaryColor,
                       ),
                     ),
                   ),
@@ -122,11 +110,11 @@ class _HeaderState extends State<Header> with TickerProviderStateMixin {
               onPressed: () {
                 if (widget.albumController.isPanelOpen) {
                   widget.albumController.close();
-                  _arrowAnimController.reverse();
+                  _arrowAnimController!.reverse();
                 }
                 if (widget.albumController.isPanelClosed) {
                   widget.albumController.open();
-                  _arrowAnimController.forward();
+                  _arrowAnimController!.forward();
                 }
               },
             ),
@@ -139,9 +127,7 @@ class _HeaderState extends State<Header> with TickerProviderStateMixin {
                 transitionBuilder: (Widget child, Animation<double> animation) {
                   return SlideTransition(
                     child: child,
-                    position: Tween<Offset>(
-                            begin: Offset(1, 0.0), end: Offset(0.0, 0.0))
-                        .animate(animation),
+                    position: Tween<Offset>(begin: Offset(1, 0.0), end: Offset(0.0, 0.0)).animate(animation),
                   );
                 },
                 child: (selectedMedia.length > 0)
@@ -152,41 +138,24 @@ class _HeaderState extends State<Header> with TickerProviderStateMixin {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              widget.decoration.completeText,
-                              style: widget.decoration.completeTextStyle ??
-                                  TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500),
+                              widget.decoration!.completeText,
+                              style: widget.decoration!.completeTextStyle ?? TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500),
                             ),
                             Text(
                               ' (${selectedMedia.length})',
                               style: TextStyle(
-                                color: widget
-                                        .decoration.completeTextStyle?.color ??
-                                    Colors.white,
-                                fontSize: widget.decoration.completeTextStyle
-                                            ?.fontSize !=
-                                        null
-                                    ? widget.decoration.completeTextStyle
-                                            .fontSize *
-                                        0.77
-                                    : 11,
+                                color: widget.decoration!.completeTextStyle?.color ?? Colors.white,
+                                fontSize: widget.decoration!.completeTextStyle?.fontSize != null ? widget.decoration!.completeTextStyle!.fontSize! * 0.77 : 11,
                                 fontWeight: FontWeight.w300,
                               ),
                             ),
                           ],
                         ),
-                        onPressed: selectedMedia.length > 0
-                            ? () => widget.onDone(selectedMedia)
-                            : null,
-                        style: widget.decoration.completeButtonStyle ??
+                        onPressed: selectedMedia.length > 0 ? () => widget.onDone(selectedMedia) : null,
+                        style: widget.decoration!.completeButtonStyle ??
                             ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all(
-                                  Theme.of(context).primaryColor),
-                              shape: MaterialStateProperty.all(
-                                  RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(3))),
+                              backgroundColor: MaterialStateProperty.all(Theme.of(context).primaryColor),
+                              shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(3))),
                             ),
                       )
                     : Container(

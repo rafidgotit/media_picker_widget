@@ -5,3 +5,7 @@
 ## 0.0.2
 
 * added support to latest dependency.
+
+## 0.0.2
+
+* added null safety.
