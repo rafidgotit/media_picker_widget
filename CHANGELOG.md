@@ -13,3 +13,8 @@
 ## 0.0.4
 
 * code reformation.
+
+## 0.0.5
+
+* Dependency Updated.
+* Added album selector background color option.

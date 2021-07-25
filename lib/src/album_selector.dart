@@ -108,14 +108,14 @@ class _AlbumTileState extends State<AlbumTile> {
               ),
               Text(
                 widget.album.name,
-                style: TextStyle(color: Colors.black, fontSize: 18),
+                style: widget.decoration.albumTextStyle??TextStyle(color: Colors.black, fontSize: 18),
               ),
               SizedBox(
                 width: 5,
               ),
               Text(
                 '${widget.album.assetCount}',
-                style: TextStyle(color: Colors.grey.shade700, fontSize: 12, fontWeight: FontWeight.w400),
+                style: TextStyle(color: Colors.grey.shade600, fontSize: 12, fontWeight: FontWeight.w400),
               ),
             ],
           ),
