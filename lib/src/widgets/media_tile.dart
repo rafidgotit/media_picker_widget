@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:media_picker_widget/src/widgets/jumping_button.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 import '../../media_picker_widget.dart';
@@ -24,7 +25,8 @@ class MediaTile extends StatefulWidget {
   _MediaTileState createState() => _MediaTileState();
 }
 
-class _MediaTileState extends State<MediaTile> with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
+class _MediaTileState extends State<MediaTile>
+    with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
   bool? selected;
 
   Media? media;
@@ -35,8 +37,10 @@ class _MediaTileState extends State<MediaTile> with AutomaticKeepAliveClientMixi
 
   @override
   void initState() {
-    _animationController = AnimationController(vsync: this, duration: _duration);
-    _animation = Tween<double>(begin: 1.0, end: 1.3).animate(_animationController!);
+    _animationController =
+        AnimationController(vsync: this, duration: _duration);
+    _animation =
+        Tween<double>(begin: 1.0, end: 1.3).animate(_animationController!);
     selected = widget.isSelected;
     if (selected!) _animationController!.forward();
     super.initState();
@@ -52,7 +56,7 @@ class _MediaTileState extends State<MediaTile> with AutomaticKeepAliveClientMixi
           children: [
             Positioned.fill(
               child: media!.thumbnail != null
-                  ? InkWell(
+                  ? JumpingButton(
                       onTap: () {
                         setState(() => selected = !selected!);
                         if (selected!)
@@ -68,11 +72,24 @@ class _MediaTileState extends State<MediaTile> with AutomaticKeepAliveClientMixi
                               child: AnimatedBuilder(
                                   animation: _animation!,
                                   builder: (context, child) {
-                                    return Transform.scale(
-                                      scale: _animation!.value,
-                                      child: Image.memory(
-                                        media!.thumbnail!,
-                                        fit: BoxFit.cover,
+                                    double amount =
+                                        (_animation!.value - 1) * 3.33;
+
+                                    return ImageFiltered(
+                                      imageFilter: ImageFilter.blur(
+                                        sigmaX:
+                                            widget.decoration!.blurStrength *
+                                                amount,
+                                        sigmaY:
+                                            widget.decoration!.blurStrength *
+                                                amount,
+                                      ),
+                                      child: Transform.scale(
+                                        scale: _animation!.value,
+                                        child: Image.memory(
+                                          media!.thumbnail!,
+                                          fit: BoxFit.cover,
+                                        ),
                                       ),
                                     );
                                   }),
@@ -84,11 +101,8 @@ class _MediaTileState extends State<MediaTile> with AutomaticKeepAliveClientMixi
                               curve: Curves.easeOut,
                               duration: _duration,
                               child: ClipRect(
-                                child: BackdropFilter(
-                                  filter: ImageFilter.blur(sigmaX: widget.decoration!.blurStrength, sigmaY: widget.decoration!.blurStrength),
-                                  child: Container(
-                                    color: Colors.black26,
-                                  ),
+                                child: Container(
+                                  color: Colors.black26,
                                 ),
                               ),
                             ),
@@ -124,7 +138,9 @@ class _MediaTileState extends State<MediaTile> with AutomaticKeepAliveClientMixi
                   duration: _duration,
                   opacity: selected! ? 1 : 0,
                   child: Container(
-                    decoration: BoxDecoration(color: Theme.of(context).primaryColor, shape: BoxShape.circle),
+                    decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColor,
+                        shape: BoxShape.circle),
                     padding: const EdgeInsets.all(5),
                     child: Icon(
                       Icons.done,
@@ -139,7 +155,8 @@ class _MediaTileState extends State<MediaTile> with AutomaticKeepAliveClientMixi
         ),
       );
     } else {
-      convertToMedia(media: widget.media).then((_media) => setState(() => media = _media));
+      convertToMedia(media: widget.media)
+          .then((_media) => setState(() => media = _media));
       return LoadingWidget(
         decoration: widget.decoration!,
       );

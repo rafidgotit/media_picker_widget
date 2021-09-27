@@ -10,7 +10,9 @@ class LoadingWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: (decoration.loadingWidget != null) ? decoration.loadingWidget : CircularProgressIndicator(),
+      child: (decoration.loadingWidget != null)
+          ? decoration.loadingWidget
+          : CircularProgressIndicator(),
     );
   }
 }

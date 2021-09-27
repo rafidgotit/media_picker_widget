@@ -1,7 +1,31 @@
 part of media_picker_widget;
 
-enum MediaCount { single, multiple }
+///make picker to select multiple or single media file
+enum MediaCount {
+  ///make picker to select single media file
+  single,
 
-enum MediaType { video, image, all }
+  ///make picker to select multiple media file
+  multiple,
+}
 
-enum ActionBarPosition { top, bottom }
+///Media picker selection type
+enum MediaType {
+  ///make picker to select only video file
+  video,
+
+  ///make picker to select only image file
+  image,
+
+  ///make picker to select any media file
+  all,
+}
+
+///position of action bar of media picker
+enum ActionBarPosition {
+  ///set action bar position top of media picker
+  top,
+
+  ///set action bar position bottom of media picker
+  bottom,
+}

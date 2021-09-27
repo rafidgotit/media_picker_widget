@@ -8,7 +8,11 @@ import '../media_picker_widget.dart';
 import 'widgets/loading_widget.dart';
 
 class AlbumSelector extends StatefulWidget {
-  AlbumSelector({required this.onSelect, required this.albums, required this.panelController, required this.decoration});
+  AlbumSelector(
+      {required this.onSelect,
+      required this.albums,
+      required this.panelController,
+      required this.decoration});
 
   final ValueChanged<AssetPathEntity> onSelect;
   final List<AssetPathEntity> albums;
@@ -48,7 +52,8 @@ class _AlbumSelectorState extends State<AlbumSelector> {
 }
 
 class AlbumTile extends StatefulWidget {
-  AlbumTile({required this.album, required this.onSelect, required this.decoration});
+  AlbumTile(
+      {required this.album, required this.onSelect, required this.decoration});
 
   final AssetPathEntity album;
   final VoidCallback onSelect;
@@ -108,14 +113,19 @@ class _AlbumTileState extends State<AlbumTile> {
               ),
               Text(
                 widget.album.name,
-                style: widget.decoration.albumTextStyle??TextStyle(color: Colors.black, fontSize: 18),
+                style: widget.decoration.albumTextStyle ??
+                    TextStyle(color: Colors.black, fontSize: 18),
               ),
               SizedBox(
                 width: 5,
               ),
               Text(
                 '${widget.album.assetCount}',
-                style: TextStyle(color: Colors.grey.shade600, fontSize: 12, fontWeight: FontWeight.w400),
+                style: widget.decoration.albumCountTextStyle ??
+                    TextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400),
               ),
             ],
           ),

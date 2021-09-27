@@ -18,3 +18,9 @@
 
 * Dependency Updated.
 * Added album selector background color option.
+
+## 0.0.6
+
+* Dependency Updated.
+* Album title style added.
+* Image tap effect updated.

@@ -1,6 +1,8 @@
 part of media_picker_widget;
 
+///The MediaPicker widget that will select media files form storage
 class MediaPicker extends StatefulWidget {
+  ///The MediaPicker constructor that will select media files form storage
   MediaPicker({
     required this.onPick,
     required this.mediaList,
@@ -11,12 +13,25 @@ class MediaPicker extends StatefulWidget {
     this.scrollController,
   });
 
+  ///CallBack on image pick is done
   final ValueChanged<List<Media>> onPick;
+
+  ///Previously selected list of media in your app
   final List<Media> mediaList;
+
+  ///Callback on cancel the picking action
   final VoidCallback onCancel;
+
+  ///make picker to select multiple or single media file
   final MediaCount mediaCount;
+
+  ///Make picker to select specific type of media, video or image
   final MediaType mediaType;
+
+  ///decorate the UI of picker
   final PickerDecoration? decoration;
+
+  ///assign a scroll controller to Media GridView of Picker
   final ScrollController? scrollController;
 
   @override
@@ -24,18 +39,18 @@ class MediaPicker extends StatefulWidget {
 }
 
 class _MediaPickerState extends State<MediaPicker> {
-  PickerDecoration? decoration;
+  PickerDecoration? _decoration;
 
-  AssetPathEntity? selectedAlbum;
+  AssetPathEntity? _selectedAlbum;
   List<AssetPathEntity>? _albums;
 
-  PanelController albumController = PanelController();
-  HeaderController headerController = HeaderController();
+  final PanelController _albumController = PanelController();
+  final HeaderController _headerController = HeaderController();
 
   @override
   void initState() {
     _fetchAlbums();
-    decoration = widget.decoration ?? PickerDecoration();
+    _decoration = widget.decoration ?? PickerDecoration();
     super.initState();
   }
 
@@ -51,14 +66,15 @@ class _MediaPickerState extends State<MediaPicker> {
               ? NoMedia()
               : Column(
                   children: [
-                    if (decoration!.actionBarPosition == ActionBarPosition.top) _buildHeader(),
+                    if (_decoration!.actionBarPosition == ActionBarPosition.top)
+                      _buildHeader(),
                     Expanded(
                         child: Stack(
                       children: [
                         Positioned.fill(
                           child: MediaList(
-                            album: selectedAlbum!,
-                            headerController: headerController,
+                            album: _selectedAlbum!,
+                            headerController: _headerController,
                             previousList: widget.mediaList,
                             mediaCount: widget.mediaCount,
                             decoration: widget.decoration,
@@ -66,17 +82,19 @@ class _MediaPickerState extends State<MediaPicker> {
                           ),
                         ),
                         AlbumSelector(
-                          panelController: albumController,
+                          panelController: _albumController,
                           albums: _albums!,
                           decoration: widget.decoration!,
                           onSelect: (album) {
-                            headerController.closeAlbumDrawer!();
-                            setState(() => selectedAlbum = album);
+                            _headerController.closeAlbumDrawer!();
+                            setState(() => _selectedAlbum = album);
                           },
                         ),
                       ],
                     )),
-                    if (decoration!.actionBarPosition == ActionBarPosition.bottom) _buildHeader(),
+                    if (_decoration!.actionBarPosition ==
+                        ActionBarPosition.bottom)
+                      _buildHeader(),
                   ],
                 ),
     );
@@ -86,11 +104,11 @@ class _MediaPickerState extends State<MediaPicker> {
     return Header(
       onBack: handleBackPress,
       onDone: widget.onPick,
-      albumController: albumController,
-      selectedAlbum: selectedAlbum!,
-      controller: headerController,
+      albumController: _albumController,
+      selectedAlbum: _selectedAlbum!,
+      controller: _headerController,
       mediaCount: widget.mediaCount,
-      decoration: decoration,
+      decoration: _decoration,
     );
   }
 
@@ -104,10 +122,11 @@ class _MediaPickerState extends State<MediaPicker> {
 
     var result = await PhotoManager.requestPermission();
     if (result) {
-      List<AssetPathEntity> albums = await PhotoManager.getAssetPathList(type: type);
+      List<AssetPathEntity> albums =
+          await PhotoManager.getAssetPathList(type: type);
       setState(() {
         _albums = albums;
-        selectedAlbum = _albums![0];
+        _selectedAlbum = _albums![0];
       });
     } else {
       PhotoManager.openSetting();
@@ -115,22 +134,31 @@ class _MediaPickerState extends State<MediaPicker> {
   }
 
   void handleBackPress() {
-    if (albumController.isPanelOpen)
-      albumController.close();
+    if (_albumController.isPanelOpen)
+      _albumController.close();
     else
       widget.onCancel();
   }
 }
 
-openCamera({required ValueChanged<Media> onCapture}) async {
-  final picker = ImagePicker();
-  final PickedFile? pickedFile = await picker.getImage(source: ImageSource.camera);
+///call this function to capture and get media from camera
+openCamera(
+    {
+
+    ///callback when capturing is done
+    required ValueChanged<Media> onCapture}) async {
+  final ImagePicker _picker = ImagePicker();
+  final XFile? pickedFile = await _picker.pickImage(source: ImageSource.camera);
 
   if (pickedFile != null) {
-    List<AssetPathEntity> album = await PhotoManager.getAssetPathList(onlyAll: true);
-    List<AssetEntity> media = await album[0].getAssetListPaged(0, 1);
+    Media converted = Media(
+      id: UniqueKey().toString(),
+      thumbnail: await pickedFile.readAsBytes(),
+      creationTime: DateTime.now(),
+      mediaByte: await pickedFile.readAsBytes(),
+      title: 'capturedImage',
+    );
 
-    Media convertedMedia = await convertToMedia(media: media[0]);
-    onCapture(convertedMedia);
+    onCapture(converted);
   }
 }
