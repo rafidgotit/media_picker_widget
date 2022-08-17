@@ -135,8 +135,9 @@ class _AlbumTileState extends State<AlbumTile> {
   }
 
   _getAlbumThumb(AssetPathEntity album) async {
-    List<AssetEntity> media = await album.getAssetListPaged(0, 1);
-    Uint8List? _thumbByte = await media[0].thumbDataWithSize(80, 80);
+    List<AssetEntity> media = await album.getAssetListPaged(page: 0, size: 1);
+    Uint8List? _thumbByte =
+        await media[0].thumbnailDataWithSize(ThumbnailSize(80, 80));
     if (_thumbByte != null)
       setState(() => albumThumb = _thumbByte);
     else

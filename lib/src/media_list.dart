@@ -39,7 +39,7 @@ class _MediaListState extends State<MediaList> {
     album = widget.album;
     if (widget.mediaCount == MediaCount.multiple) {
       selectedMedias.addAll(widget.previousList);
-      WidgetsBinding.instance!.addPostFrameCallback(
+      WidgetsBinding.instance.addPostFrameCallback(
           (_) => widget.headerController.updateSelection!(selectedMedias));
     }
     _fetchNewMedia();
@@ -87,9 +87,11 @@ class _MediaListState extends State<MediaList> {
 
   _fetchNewMedia() async {
     lastPage = currentPage;
-    var result = await PhotoManager.requestPermission();
-    if (result) {
-      List<AssetEntity> media = await album!.getAssetListPaged(currentPage, 60);
+    PermissionState result = await PhotoManager.requestPermissionExtend();
+    if (result == PermissionState.authorized ||
+        result == PermissionState.limited) {
+      List<AssetEntity> media =
+          await album!.getAssetListPaged(page: currentPage, size: 60);
       List<Widget> temp = [];
 
       for (var asset in media) {

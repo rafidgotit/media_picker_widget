@@ -120,8 +120,9 @@ class _MediaPickerState extends State<MediaPicker> {
       type = RequestType.video;
     else if (widget.mediaType == MediaType.image) type = RequestType.image;
 
-    var result = await PhotoManager.requestPermission();
-    if (result) {
+    PermissionState result = await PhotoManager.requestPermissionExtend();
+    if (result == PermissionState.authorized ||
+        result == PermissionState.limited) {
       List<AssetPathEntity> albums =
           await PhotoManager.getAssetPathList(type: type);
       setState(() {

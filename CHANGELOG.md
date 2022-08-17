@@ -24,3 +24,20 @@
 * Dependency Updated.
 * Album title style added.
 * Image tap effect updated.
+
+## 0.0.7
+
+* Dependency Updated.
+* Grid lag fix.
+* UI fix.
+* Documentation added
+
+## 0.0.8
+
+* Dependency Updated.
+* Flutter 3.0 support
+
+## 0.0.9
+
+* Fix Breaking Changes.
+* Flutter 3.0 fix

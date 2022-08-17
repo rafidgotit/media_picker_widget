@@ -1,5 +1,5 @@
 # media_picker_widget
-[![Build](https://img.shields.io/badge/pub-v0.0.6-%23009F00)](https://pub.dev/packages/media_picker_widget)
+[![Build](https://img.shields.io/badge/pub-v0.0.8-%23009F00)](https://pub.dev/packages/media_picker_widget)
 [![Build](https://img.shields.io/badge/licence-MIT-%23f16f12)](https://github.com/rafid08/media_picker_widget/blob/master/LICENSE)
 
 
@@ -13,7 +13,7 @@
 ## Install
 Add to `pubspec.yaml`.
 
-The latest version is   [![Build](https://img.shields.io/badge/pub-v0.0.6-%23009F00)](https://pub.dev/packages/media_picker_widget)
+The latest version is   [![Build](https://img.shields.io/badge/pub-v0.0.9-%23009F00)](https://pub.dev/packages/media_picker_widget)
 
 ```
 media_picker_widget: $latest_version
