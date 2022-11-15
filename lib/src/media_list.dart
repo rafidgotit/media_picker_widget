@@ -28,18 +28,17 @@ class _MediaListState extends State<MediaList> {
   final List<Widget> _mediaList = [];
   var _currentPage = 0;
   late var _lastPage = _currentPage;
-  late AssetPathEntity album = widget.album;
+  late AssetPathEntity _album = widget.album;
 
-  List<Media> selectedMedias = [];
+  late List<Media> _selectedMedias = [...widget.previousList];
 
   final _headerController = GlobalKey<HeaderState>();
 
   @override
   void initState() {
     if (widget.mediaCount == MediaCount.multiple) {
-      selectedMedias.addAll(widget.previousList);
       WidgetsBinding.instance.addPostFrameCallback((_) =>
-          _headerController.currentState?.updateSelection(selectedMedias));
+          _headerController.currentState?.updateSelection(_selectedMedias));
     }
     _fetchNewMedia();
     super.initState();
@@ -65,9 +64,9 @@ class _MediaListState extends State<MediaList> {
   }
 
   void _resetAlbum() {
-    if (album.id != widget.album.id) {
+    if (_album.id != widget.album.id) {
       _mediaList.clear();
-      album = widget.album;
+      _album = widget.album;
       _currentPage = 0;
       _fetchNewMedia();
     }
@@ -86,7 +85,7 @@ class _MediaListState extends State<MediaList> {
     final result = await PhotoManager.requestPermissionExtend();
     if (result == PermissionState.authorized ||
         result == PermissionState.limited) {
-      final media = await album.getAssetListPaged(
+      final media = await _album.getAssetListPaged(
         page: _currentPage,
         size: 60,
       );
@@ -111,22 +110,16 @@ class _MediaListState extends State<MediaList> {
   }
 
   bool isPreviouslySelected(AssetEntity media) {
-    bool isSelected = false;
-    for (var asset in selectedMedias) {
-      if (asset.id == media.id) {
-        isSelected = true;
-      }
-    }
-    return isSelected;
+    return _selectedMedias.any((element) => element.id == media.id);
   }
 
   void _onMediaTileSelected(bool isSelected, Media media) {
     if (isSelected) {
-      setState(() => selectedMedias.add(media));
+      setState(() => _selectedMedias.add(media));
     } else {
       setState(
-          () => selectedMedias.removeWhere((_media) => _media.id == media.id));
+          () => _selectedMedias.removeWhere((_media) => _media.id == media.id));
     }
-    _headerController.currentState?.updateSelection(selectedMedias);
+    _headerController.currentState?.updateSelection(_selectedMedias);
   }
 }

@@ -9,39 +9,45 @@ import 'widgets/jumping_button.dart';
 
 class Header extends StatefulWidget {
   Header({
+    Key? key,
     required this.selectedAlbum,
     required this.onBack,
     required this.onDone,
     required this.albumController,
     this.mediaCount,
-    this.decoration,
-  });
+    required this.decoration,
+  }) : super(key: key);
 
   final AssetPathEntity selectedAlbum;
   final VoidCallback onBack;
   final PanelController albumController;
   final ValueChanged<List<Media>> onDone;
   final MediaCount? mediaCount;
-  final PickerDecoration? decoration;
+  final PickerDecoration decoration;
 
   @override
   HeaderState createState() => HeaderState();
 }
 
 class HeaderState extends State<Header> with TickerProviderStateMixin {
-  List<Media> selectedMedia = [];
+  static const _arrowDown = 0.0;
+  static const _arrowUp = 1.0;
+
+  List<Media> _selectedMedia = [];
 
   late final _arrowAnimController = AnimationController(
     vsync: this,
     duration: Duration(milliseconds: 100),
   );
 
-  late final _arrowAnimation =
-      Tween<double>(begin: 0, end: 1).animate(_arrowAnimController);
+  late final _arrowAnimation = Tween<double>(
+    begin: _arrowDown,
+    end: _arrowUp,
+  ).animate(_arrowAnimController);
 
-  void updateSelection(selectedMediaList) {
+  void updateSelection(List<Media> selectedMediaList) {
     if (widget.mediaCount == MediaCount.multiple) {
-      setState(() => selectedMedia = selectedMediaList.cast<Media>());
+      setState(() => _selectedMedia = selectedMediaList);
     } else if (selectedMediaList.length == 1) {
       widget.onDone(selectedMediaList);
     }
@@ -61,14 +67,15 @@ class HeaderState extends State<Header> with TickerProviderStateMixin {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 6),
             child: IconButton(
-                icon: widget.decoration!.cancelIcon ??
-                    Icon(Icons.arrow_back_outlined),
-                onPressed: () {
-                  if (_arrowAnimation.value == 1) {
-                    _arrowAnimController.reverse();
-                  }
-                  widget.onBack();
-                }),
+              icon: widget.decoration.cancelIcon ??
+                  Icon(Icons.arrow_back_outlined),
+              onPressed: () {
+                if (_arrowAnimation.value == _arrowUp) {
+                  _arrowAnimController.reverse();
+                }
+                widget.onBack();
+              },
+            ),
           ),
           Expanded(
             flex: 3,
@@ -85,14 +92,14 @@ class HeaderState extends State<Header> with TickerProviderStateMixin {
                         return SlideTransition(
                           child: child,
                           position: Tween<Offset>(
-                                  begin: Offset(0.0, -0.5),
-                                  end: Offset(0.0, 0.0))
-                              .animate(animation),
+                            begin: Offset(0.0, -0.5),
+                            end: Offset(0.0, 0.0),
+                          ).animate(animation),
                         );
                       },
                       child: Text(
                         widget.selectedAlbum.name,
-                        style: widget.decoration!.albumTitleStyle,
+                        style: widget.decoration.albumTitleStyle,
                         key: ValueKey<String>(widget.selectedAlbum.id),
                       ),
                     ),
@@ -102,13 +109,12 @@ class HeaderState extends State<Header> with TickerProviderStateMixin {
                         angle: _arrowAnimation.value * pi,
                         child: Icon(
                           Icons.keyboard_arrow_up_outlined,
-                          size: (widget
-                                      .decoration!.albumTitleStyle?.fontSize) !=
+                          size: (widget.decoration.albumTitleStyle?.fontSize) !=
                                   null
-                              ? widget.decoration!.albumTitleStyle!.fontSize! *
+                              ? widget.decoration.albumTitleStyle!.fontSize! *
                                   1.5
                               : 20,
-                          color: widget.decoration!.albumTitleStyle?.color ??
+                          color: widget.decoration.albumTitleStyle?.color ??
                               Theme.of(context).primaryColor,
                         ),
                       ),
@@ -141,7 +147,7 @@ class HeaderState extends State<Header> with TickerProviderStateMixin {
                         .animate(animation),
                   );
                 },
-                child: (selectedMedia.length > 0)
+                child: (_selectedMedia.isNotEmpty)
                     ? TextButton(
                         key: Key('button'),
                         child: Row(
@@ -149,23 +155,24 @@ class HeaderState extends State<Header> with TickerProviderStateMixin {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              widget.decoration!.completeText,
-                              style: widget.decoration!.completeTextStyle ??
+                              widget.decoration.completeText,
+                              style: widget.decoration.completeTextStyle ??
                                   TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500),
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
                             ),
                             Text(
-                              ' (${selectedMedia.length})',
+                              ' (${_selectedMedia.length})',
                               style: TextStyle(
                                 color: widget
-                                        .decoration!.completeTextStyle?.color ??
+                                        .decoration.completeTextStyle?.color ??
                                     Colors.white,
-                                fontSize: widget.decoration!.completeTextStyle
+                                fontSize: widget.decoration.completeTextStyle
                                             ?.fontSize !=
                                         null
-                                    ? widget.decoration!.completeTextStyle!
+                                    ? widget.decoration.completeTextStyle!
                                             .fontSize! *
                                         0.77
                                     : 11,
@@ -174,21 +181,18 @@ class HeaderState extends State<Header> with TickerProviderStateMixin {
                             ),
                           ],
                         ),
-                        onPressed: selectedMedia.length > 0
-                            ? () => widget.onDone(selectedMedia)
+                        onPressed: _selectedMedia.length > 0
+                            ? () => widget.onDone(_selectedMedia)
                             : null,
-                        style: widget.decoration!.completeButtonStyle ??
-                            ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all(
-                                  Theme.of(context).primaryColor),
-                              shape: MaterialStateProperty.all(
-                                  RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(3))),
+                        style: widget.decoration.completeButtonStyle ??
+                            TextButton.styleFrom(
+                              backgroundColor: Theme.of(context).primaryColor,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(3),
+                              ),
                             ),
                       )
-                    : Container(
-                        key: Key('blank'),
-                      ),
+                    : null,
               ),
             ),
         ],

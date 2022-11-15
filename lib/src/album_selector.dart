@@ -7,7 +7,7 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import '../media_picker_widget.dart';
 import 'widgets/loading_widget.dart';
 
-class AlbumSelector extends StatefulWidget {
+class AlbumSelector extends StatelessWidget {
   AlbumSelector({
     required this.onSelect,
     required this.albums,
@@ -21,15 +21,10 @@ class AlbumSelector extends StatefulWidget {
   final PickerDecoration decoration;
 
   @override
-  _AlbumSelectorState createState() => _AlbumSelectorState();
-}
-
-class _AlbumSelectorState extends State<AlbumSelector> {
-  @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constrains) {
       return SlidingUpPanel(
-        controller: widget.panelController,
+        controller: panelController,
         minHeight: 0,
         color: Theme.of(context).canvasColor,
         boxShadow: [],
@@ -38,11 +33,11 @@ class _AlbumSelectorState extends State<AlbumSelector> {
           return ListView(
             controller: sc,
             children: List<Widget>.generate(
-              widget.albums.length,
+              albums.length,
               (index) => AlbumTile(
-                album: widget.albums[index],
-                onSelect: () => widget.onSelect(widget.albums[index]),
-                decoration: widget.decoration,
+                album: albums[index],
+                onSelect: () => onSelect(albums[index]),
+                decoration: decoration,
               ),
             ),
           );
@@ -52,7 +47,7 @@ class _AlbumSelectorState extends State<AlbumSelector> {
   }
 }
 
-class AlbumTile extends StatefulWidget {
+class AlbumTile extends StatelessWidget {
   AlbumTile({
     required this.album,
     required this.onSelect,
@@ -63,18 +58,13 @@ class AlbumTile extends StatefulWidget {
   final VoidCallback onSelect;
   final PickerDecoration decoration;
 
-  @override
-  _AlbumTileState createState() => _AlbumTileState();
-}
+  Future<Uint8List?> _getAlbumThumb(AssetPathEntity album) async {
+    final media = await album.getAssetListPaged(page: 0, size: 1);
 
-class _AlbumTileState extends State<AlbumTile> {
-  Uint8List? albumThumb;
-  bool hasError = false;
-
-  @override
-  void initState() {
-    _getAlbumThumb(widget.album);
-    super.initState();
+    if (media.isNotEmpty) {
+      return media[0].thumbnailDataWithSize(ThumbnailSize(80, 80));
+    }
+    return null;
   }
 
   @override
@@ -84,7 +74,7 @@ class _AlbumTileState extends State<AlbumTile> {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: widget.onSelect,
+          onTap: onSelect,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -92,32 +82,17 @@ class _AlbumTileState extends State<AlbumTile> {
                 padding: const EdgeInsets.all(10),
                 width: 80,
                 height: 80,
-                child: !hasError
-                    ? albumThumb != null
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.memory(
-                              albumThumb!,
-                              fit: BoxFit.cover,
-                            ),
-                          )
-                        : LoadingWidget(
-                            decoration: widget.decoration,
-                          )
-                    : Center(
-                        child: Icon(
-                          Icons.error_outline,
-                          color: Colors.grey.shade400,
-                          size: 40,
-                        ),
-                      ),
+                child: FutureBuilder(
+                  future: _getAlbumThumb(album),
+                  builder: _builder,
+                ),
               ),
               SizedBox(
                 width: 10,
               ),
               Text(
-                widget.album.name,
-                style: widget.decoration.albumTextStyle ??
+                album.name,
+                style: decoration.albumTextStyle ??
                     TextStyle(
                       color: Colors.black,
                       fontSize: 18,
@@ -127,7 +102,7 @@ class _AlbumTileState extends State<AlbumTile> {
                 width: 5,
               ),
               FutureBuilder(
-                future: widget.album.assetCountAsync,
+                future: album.assetCountAsync,
                 builder: _assetCountBuilder,
               ),
             ],
@@ -137,32 +112,49 @@ class _AlbumTileState extends State<AlbumTile> {
     );
   }
 
-  void _getAlbumThumb(AssetPathEntity album) async {
-    final media = await album.getAssetListPaged(page: 0, size: 1);
-
-    if (media.isNotEmpty) {
-      final _thumbByte =
-          await media[0].thumbnailDataWithSize(ThumbnailSize(80, 80));
-      if (_thumbByte != null) {
-        setState(() => albumThumb = _thumbByte);
-      } else {
-        setState(() => hasError = true);
-      }
-    }
-  }
-
   Widget _assetCountBuilder(
     BuildContext context,
     AsyncSnapshot<int> snapshot,
   ) {
     return Text(
       '${snapshot.data ?? 0}',
-      style: widget.decoration.albumCountTextStyle ??
+      style: decoration.albumCountTextStyle ??
           TextStyle(
             color: Colors.grey.shade600,
             fontSize: 12,
             fontWeight: FontWeight.w400,
           ),
     );
+  }
+
+  Widget _builder(
+    BuildContext context,
+    AsyncSnapshot<Uint8List?> snapshot,
+  ) {
+    if (snapshot.hasData) {
+      final albumThumb = snapshot.data;
+
+      if (albumThumb == null) {
+        return Center(
+          child: Icon(
+            Icons.error_outline,
+            color: Colors.grey.shade400,
+            size: 40,
+          ),
+        );
+      } else {
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Image.memory(
+            albumThumb,
+            fit: BoxFit.cover,
+          ),
+        );
+      }
+    } else {
+      return LoadingWidget(
+        decoration: decoration,
+      );
+    }
   }
 }

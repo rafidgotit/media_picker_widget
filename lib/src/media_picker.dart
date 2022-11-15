@@ -68,12 +68,6 @@ class _MediaPickerState extends State<MediaPicker> {
   }
 
   @override
-  void initState() {
-    _fetchAlbums();
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
@@ -105,7 +99,7 @@ class _MediaPickerState extends State<MediaPicker> {
       final albums = snapshot.data!;
 
       if (albums.isEmpty) {
-        return NoMedia();
+        return NoMedia(text: _decoration.noMedia);
       } else {
         final defaultSelectedAlbum = albums[0];
 
@@ -113,6 +107,7 @@ class _MediaPickerState extends State<MediaPicker> {
           children: [
             if (_decoration.actionBarPosition == ActionBarPosition.top)
               Header(
+                key: _headerController,
                 onBack: handleBackPress,
                 onDone: widget.onPick,
                 albumController: _albumController,
@@ -143,10 +138,11 @@ class _MediaPickerState extends State<MediaPicker> {
             ),
             if (_decoration.actionBarPosition == ActionBarPosition.bottom)
               Header(
+                key: _headerController,
                 onBack: handleBackPress,
                 onDone: widget.onPick,
                 albumController: _albumController,
-                selectedAlbum: _selectedAlbum!,
+                selectedAlbum: _selectedAlbum ?? defaultSelectedAlbum,
                 mediaCount: widget.mediaCount,
                 decoration: _decoration,
               ),

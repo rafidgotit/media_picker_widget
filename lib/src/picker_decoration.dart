@@ -26,6 +26,9 @@ class PickerDecoration {
   ///text of select button
   final String completeText;
 
+  ///text of no media
+  final String? noMedia;
+
   ///text style of select button
   final TextStyle? completeTextStyle;
 
@@ -48,5 +51,6 @@ class PickerDecoration {
     this.loadingWidget,
     this.albumTextStyle,
     this.albumCountTextStyle,
+    this.noMedia,
   });
 }
