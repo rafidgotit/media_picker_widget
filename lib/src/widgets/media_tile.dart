@@ -13,13 +13,13 @@ class MediaTile extends StatefulWidget {
     required this.media,
     required this.onSelected,
     this.isSelected = false,
-    this.decoration,
+    required this.decoration,
   }) : super(key: key);
 
   final AssetEntity media;
-  final Function(bool, Media) onSelected;
+  final Function(bool isSelected, Media media) onSelected;
   final bool isSelected;
-  final PickerDecoration? decoration;
+  final PickerDecoration decoration;
 
   @override
   _MediaTileState createState() => _MediaTileState();
@@ -27,67 +27,80 @@ class MediaTile extends StatefulWidget {
 
 class _MediaTileState extends State<MediaTile>
     with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
-  bool? selected;
+  late var _selected = widget.isSelected;
 
-  Media? media;
+  final _duration = const Duration(milliseconds: 100);
+  late final AnimationController _animationController =
+      AnimationController(vsync: this, duration: _duration);
+  late final _animation =
+      Tween<double>(begin: 1.0, end: 1.3).animate(_animationController);
 
-  Duration _duration = Duration(milliseconds: 100);
-  AnimationController? _animationController;
-  Animation? _animation;
+  void _onTap(Media media) {
+    setState(() => _selected = _selected);
+    if (_selected) {
+      _animationController.forward();
+    } else {
+      _animationController.reverse();
+    }
+    widget.onSelected(_selected, media);
+  }
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
-    _animationController =
-        AnimationController(vsync: this, duration: _duration);
-    _animation =
-        Tween<double>(begin: 1.0, end: 1.3).animate(_animationController!);
-    selected = widget.isSelected;
-    if (selected!) _animationController!.forward();
+    if (_selected) {
+      _animationController.forward();
+    }
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    if (media != null) {
+    return FutureBuilder(
+      future: _convertToMedia(media: widget.media),
+      builder: _builder,
+    );
+  }
+
+  Widget _builder(
+    BuildContext context,
+    AsyncSnapshot<Media> snapshot,
+  ) {
+    if (snapshot.hasData) {
+      final media = snapshot.data!;
+
       return Padding(
         padding: const EdgeInsets.all(0.5),
         child: Stack(
           children: [
             Positioned.fill(
-              child: media!.thumbnail != null
+              child: media.thumbnail != null
                   ? JumpingButton(
-                      onTap: () {
-                        setState(() => selected = !selected!);
-                        if (selected!)
-                          _animationController!.forward();
-                        else
-                          _animationController!.reverse();
-                        widget.onSelected(selected!, media!);
-                      },
+                      onTap: () => _onTap(media),
                       child: Stack(
                         children: [
                           Positioned.fill(
                             child: ClipRect(
                               child: AnimatedBuilder(
-                                  animation: _animation!,
+                                  animation: _animation,
                                   builder: (context, child) {
-                                    double amount =
-                                        (_animation!.value - 1) * 3.33;
+                                    final amount =
+                                        (_animation.value - 1) * 3.33;
 
                                     return ImageFiltered(
                                       imageFilter: ImageFilter.blur(
-                                        sigmaX:
-                                            widget.decoration!.blurStrength *
-                                                amount,
-                                        sigmaY:
-                                            widget.decoration!.blurStrength *
-                                                amount,
+                                        sigmaX: widget.decoration.blurStrength *
+                                            amount,
+                                        sigmaY: widget.decoration.blurStrength *
+                                            amount,
                                       ),
                                       child: Transform.scale(
-                                        scale: _animation!.value,
+                                        scale: _animation.value,
                                         child: Image.memory(
-                                          media!.thumbnail!,
+                                          media.thumbnail!,
                                           fit: BoxFit.cover,
                                         ),
                                       ),
@@ -97,7 +110,7 @@ class _MediaTileState extends State<MediaTile>
                           ),
                           Positioned.fill(
                             child: AnimatedOpacity(
-                              opacity: selected! ? 1 : 0,
+                              opacity: _selected ? 1 : 0,
                               curve: Curves.easeOut,
                               duration: _duration,
                               child: ClipRect(
@@ -136,11 +149,12 @@ class _MediaTileState extends State<MediaTile>
                 child: AnimatedOpacity(
                   curve: Curves.easeOut,
                   duration: _duration,
-                  opacity: selected! ? 1 : 0,
+                  opacity: _selected ? 1 : 0,
                   child: Container(
                     decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor,
-                        shape: BoxShape.circle),
+                      color: Theme.of(context).primaryColor,
+                      shape: BoxShape.circle,
+                    ),
                     padding: const EdgeInsets.all(5),
                     child: Icon(
                       Icons.done,
@@ -155,19 +169,14 @@ class _MediaTileState extends State<MediaTile>
         ),
       );
     } else {
-      convertToMedia(media: widget.media)
-          .then((_media) => setState(() => media = _media));
       return LoadingWidget(
-        decoration: widget.decoration!,
+        decoration: widget.decoration,
       );
     }
   }
-
-  @override
-  bool get wantKeepAlive => true;
 }
 
-Future<Media> convertToMedia({required AssetEntity media}) async {
+Future<Media> _convertToMedia({required AssetEntity media}) async {
   var mediaType = MediaType.all;
   if (media.type == AssetType.video) mediaType = MediaType.video;
   if (media.type == AssetType.image) mediaType = MediaType.image;

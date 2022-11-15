@@ -118,19 +118,17 @@ class _AlbumTileState extends State<AlbumTile> {
               Text(
                 widget.album.name,
                 style: widget.decoration.albumTextStyle ??
-                    TextStyle(color: Colors.black, fontSize: 18),
+                    TextStyle(
+                      color: Colors.black,
+                      fontSize: 18,
+                    ),
               ),
               SizedBox(
                 width: 5,
               ),
-              Text(
-                '${widget.album.assetCount}',
-                style: widget.decoration.albumCountTextStyle ??
-                    TextStyle(
-                      color: Colors.grey.shade600,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400,
-                    ),
+              FutureBuilder(
+                future: widget.album.assetCountAsync,
+                builder: _assetCountBuilder,
               ),
             ],
           ),
@@ -151,5 +149,20 @@ class _AlbumTileState extends State<AlbumTile> {
         setState(() => hasError = true);
       }
     }
+  }
+
+  Widget _assetCountBuilder(
+    BuildContext context,
+    AsyncSnapshot<int> snapshot,
+  ) {
+    return Text(
+      '${snapshot.data ?? 0}',
+      style: widget.decoration.albumCountTextStyle ??
+          TextStyle(
+            color: Colors.grey.shade600,
+            fontSize: 12,
+            fontWeight: FontWeight.w400,
+          ),
+    );
   }
 }

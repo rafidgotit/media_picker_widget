@@ -10,14 +10,14 @@ class MediaList extends StatefulWidget {
     required this.album,
     required this.previousList,
     this.mediaCount,
-    this.decoration,
+    required this.decoration,
     this.scrollController,
   });
 
   final AssetPathEntity album;
   final List<Media> previousList;
   final MediaCount? mediaCount;
-  final PickerDecoration? decoration;
+  final PickerDecoration decoration;
   final ScrollController? scrollController;
 
   @override
@@ -25,10 +25,10 @@ class MediaList extends StatefulWidget {
 }
 
 class _MediaListState extends State<MediaList> {
-  List<Widget> _mediaList = [];
-  int currentPage = 0;
-  int? lastPage;
-  AssetPathEntity? album;
+  final List<Widget> _mediaList = [];
+  var _currentPage = 0;
+  late var _lastPage = _currentPage;
+  late AssetPathEntity album = widget.album;
 
   List<Media> selectedMedias = [];
 
@@ -36,7 +36,6 @@ class _MediaListState extends State<MediaList> {
 
   @override
   void initState() {
-    album = widget.album;
     if (widget.mediaCount == MediaCount.multiple) {
       selectedMedias.addAll(widget.previousList);
       WidgetsBinding.instance.addPostFrameCallback((_) =>
@@ -58,54 +57,45 @@ class _MediaListState extends State<MediaList> {
         controller: widget.scrollController,
         itemCount: _mediaList.length,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: widget.decoration!.columnCount),
-        itemBuilder: (BuildContext context, int index) {
-          return _mediaList[index];
-        },
+          crossAxisCount: widget.decoration.columnCount,
+        ),
+        itemBuilder: (_, index) => _mediaList[index],
       ),
     );
   }
 
-  _resetAlbum() {
-    if (album != null) {
-      if (album!.id != widget.album.id) {
-        _mediaList.clear();
-        album = widget.album;
-        currentPage = 0;
-        _fetchNewMedia();
-      }
+  void _resetAlbum() {
+    if (album.id != widget.album.id) {
+      _mediaList.clear();
+      album = widget.album;
+      _currentPage = 0;
+      _fetchNewMedia();
     }
   }
 
-  _handleScrollEvent(ScrollNotification scroll) {
+  void _handleScrollEvent(ScrollNotification scroll) {
     if (scroll.metrics.pixels / scroll.metrics.maxScrollExtent > 0.33) {
-      if (currentPage != lastPage) {
+      if (_currentPage != _lastPage) {
         _fetchNewMedia();
       }
     }
   }
 
   void _fetchNewMedia() async {
-    lastPage = currentPage;
+    _lastPage = _currentPage;
     final result = await PhotoManager.requestPermissionExtend();
     if (result == PermissionState.authorized ||
         result == PermissionState.limited) {
-      List<AssetEntity> media =
-          await album!.getAssetListPaged(page: currentPage, size: 60);
+      final media = await album.getAssetListPaged(
+        page: _currentPage,
+        size: 60,
+      );
       List<Widget> temp = [];
 
       for (var asset in media) {
         temp.add(MediaTile(
           media: asset,
-          onSelected: (isSelected, media) {
-            if (isSelected) {
-              setState(() => selectedMedias.add(media));
-            } else {
-              setState(() => selectedMedias
-                  .removeWhere((_media) => _media.id == media.id));
-            }
-            _headerController.currentState?.updateSelection(selectedMedias);
-          },
+          onSelected: _onMediaTileSelected,
           isSelected: isPreviouslySelected(asset),
           decoration: widget.decoration,
         ));
@@ -113,7 +103,7 @@ class _MediaListState extends State<MediaList> {
 
       setState(() {
         _mediaList.addAll(temp);
-        currentPage++;
+        _currentPage++;
       });
     } else {
       PhotoManager.openSetting();
@@ -123,8 +113,20 @@ class _MediaListState extends State<MediaList> {
   bool isPreviouslySelected(AssetEntity media) {
     bool isSelected = false;
     for (var asset in selectedMedias) {
-      if (asset.id == media.id) isSelected = true;
+      if (asset.id == media.id) {
+        isSelected = true;
+      }
     }
     return isSelected;
+  }
+
+  void _onMediaTileSelected(bool isSelected, Media media) {
+    if (isSelected) {
+      setState(() => selectedMedias.add(media));
+    } else {
+      setState(
+          () => selectedMedias.removeWhere((_media) => _media.id == media.id));
+    }
+    _headerController.currentState?.updateSelection(selectedMedias);
   }
 }

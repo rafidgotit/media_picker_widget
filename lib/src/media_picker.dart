@@ -39,79 +39,15 @@ class MediaPicker extends StatefulWidget {
 }
 
 class _MediaPickerState extends State<MediaPicker> {
-  PickerDecoration? _decoration;
+  late final _decoration = widget.decoration ?? PickerDecoration();
 
-  AssetPathEntity? _selectedAlbum;
-  List<AssetPathEntity>? _albums;
-
-  final PanelController _albumController = PanelController();
+  final _albumController = PanelController();
   final _headerController = GlobalKey<HeaderState>();
 
-  @override
-  void initState() {
-    _fetchAlbums();
-    _decoration = widget.decoration ?? PickerDecoration();
-    super.initState();
-  }
+  AssetPathEntity? _selectedAlbum;
 
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: _albums == null
-          ? LoadingWidget(
-              decoration: widget.decoration!,
-            )
-          : _albums!.length == 0
-              ? NoMedia()
-              : Column(
-                  children: [
-                    if (_decoration!.actionBarPosition == ActionBarPosition.top)
-                      _buildHeader(),
-                    Expanded(
-                        child: Stack(
-                      children: [
-                        Positioned.fill(
-                          child: MediaList(
-                            album: _selectedAlbum!,
-                            previousList: widget.mediaList,
-                            mediaCount: widget.mediaCount,
-                            decoration: widget.decoration,
-                            scrollController: widget.scrollController,
-                          ),
-                        ),
-                        AlbumSelector(
-                          panelController: _albumController,
-                          albums: _albums!,
-                          decoration: widget.decoration!,
-                          onSelect: (album) {
-                            _headerController.currentState?.closeAlbumDrawer();
-                            setState(() => _selectedAlbum = album);
-                          },
-                        ),
-                      ],
-                    )),
-                    if (_decoration!.actionBarPosition ==
-                        ActionBarPosition.bottom)
-                      _buildHeader(),
-                  ],
-                ),
-    );
-  }
-
-  Widget _buildHeader() {
-    return Header(
-      onBack: handleBackPress,
-      onDone: widget.onPick,
-      albumController: _albumController,
-      selectedAlbum: _selectedAlbum!,
-      mediaCount: widget.mediaCount,
-      decoration: _decoration,
-    );
-  }
-
-  void _fetchAlbums() async {
-    RequestType type = RequestType.common;
+  Future<List<AssetPathEntity>> _fetchAlbums() async {
+    var type = RequestType.common;
     if (widget.mediaType == MediaType.all) {
       type = RequestType.common;
     } else if (widget.mediaType == MediaType.video) {
@@ -120,18 +56,32 @@ class _MediaPickerState extends State<MediaPicker> {
       type = RequestType.image;
     }
 
-    PermissionState result = await PhotoManager.requestPermissionExtend();
+    final result = await PhotoManager.requestPermissionExtend();
     if (result == PermissionState.authorized ||
         result == PermissionState.limited) {
-      List<AssetPathEntity> albums =
-          await PhotoManager.getAssetPathList(type: type);
-      setState(() {
-        _albums = albums;
-        _selectedAlbum = _albums![0];
-      });
+      return await PhotoManager.getAssetPathList(type: type);
     } else {
       PhotoManager.openSetting();
+
+      return [];
     }
+  }
+
+  @override
+  void initState() {
+    _fetchAlbums();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: FutureBuilder(
+        future: _fetchAlbums(),
+        builder: _builder,
+      ),
+    );
   }
 
   void handleBackPress() {
@@ -141,6 +91,74 @@ class _MediaPickerState extends State<MediaPicker> {
       widget.onCancel();
     }
   }
+
+  void _onAlbumSelected(AssetPathEntity album) {
+    _headerController.currentState?.closeAlbumDrawer();
+    setState(() => _selectedAlbum = album);
+  }
+
+  Widget _builder(
+    BuildContext context,
+    AsyncSnapshot<List<AssetPathEntity>> snapshot,
+  ) {
+    if (snapshot.hasData) {
+      final albums = snapshot.data!;
+
+      if (albums.isEmpty) {
+        return NoMedia();
+      } else {
+        final defaultSelectedAlbum = albums[0];
+
+        return Column(
+          children: [
+            if (_decoration.actionBarPosition == ActionBarPosition.top)
+              Header(
+                onBack: handleBackPress,
+                onDone: widget.onPick,
+                albumController: _albumController,
+                selectedAlbum: _selectedAlbum ?? defaultSelectedAlbum,
+                mediaCount: widget.mediaCount,
+                decoration: _decoration,
+              ),
+            Expanded(
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: MediaList(
+                      album: _selectedAlbum ?? defaultSelectedAlbum,
+                      previousList: widget.mediaList,
+                      mediaCount: widget.mediaCount,
+                      decoration: _decoration,
+                      scrollController: widget.scrollController,
+                    ),
+                  ),
+                  AlbumSelector(
+                    panelController: _albumController,
+                    albums: albums,
+                    decoration: _decoration,
+                    onSelect: _onAlbumSelected,
+                  ),
+                ],
+              ),
+            ),
+            if (_decoration.actionBarPosition == ActionBarPosition.bottom)
+              Header(
+                onBack: handleBackPress,
+                onDone: widget.onPick,
+                albumController: _albumController,
+                selectedAlbum: _selectedAlbum!,
+                mediaCount: widget.mediaCount,
+                decoration: _decoration,
+              ),
+          ],
+        );
+      }
+    } else {
+      return LoadingWidget(
+        decoration: _decoration,
+      );
+    }
+  }
 }
 
 ///call this function to capture and get media from camera
@@ -148,11 +166,11 @@ void openCamera({
   ///callback when capturing is done
   required ValueChanged<Media> onCapture,
 }) async {
-  final ImagePicker _picker = ImagePicker();
-  final XFile? pickedFile = await _picker.pickImage(source: ImageSource.camera);
+  final picker = ImagePicker();
+  final pickedFile = await picker.pickImage(source: ImageSource.camera);
 
   if (pickedFile != null) {
-    Media converted = Media(
+    final converted = Media(
       id: UniqueKey().toString(),
       thumbnail: await pickedFile.readAsBytes(),
       creationTime: DateTime.now(),
