@@ -8,11 +8,12 @@ import '../media_picker_widget.dart';
 import 'widgets/loading_widget.dart';
 
 class AlbumSelector extends StatefulWidget {
-  AlbumSelector(
-      {required this.onSelect,
-      required this.albums,
-      required this.panelController,
-      required this.decoration});
+  AlbumSelector({
+    required this.onSelect,
+    required this.albums,
+    required this.panelController,
+    required this.decoration,
+  });
 
   final ValueChanged<AssetPathEntity> onSelect;
   final List<AssetPathEntity> albums;
@@ -52,8 +53,11 @@ class _AlbumSelectorState extends State<AlbumSelector> {
 }
 
 class AlbumTile extends StatefulWidget {
-  AlbumTile(
-      {required this.album, required this.onSelect, required this.decoration});
+  AlbumTile({
+    required this.album,
+    required this.onSelect,
+    required this.decoration,
+  });
 
   final AssetPathEntity album;
   final VoidCallback onSelect;
@@ -123,9 +127,10 @@ class _AlbumTileState extends State<AlbumTile> {
                 '${widget.album.assetCount}',
                 style: widget.decoration.albumCountTextStyle ??
                     TextStyle(
-                        color: Colors.grey.shade600,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w400),
+                      color: Colors.grey.shade600,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                    ),
               ),
             ],
           ),
@@ -134,13 +139,17 @@ class _AlbumTileState extends State<AlbumTile> {
     );
   }
 
-  _getAlbumThumb(AssetPathEntity album) async {
-    List<AssetEntity> media = await album.getAssetListPaged(page: 0, size: 1);
-    Uint8List? _thumbByte =
-        await media[0].thumbnailDataWithSize(ThumbnailSize(80, 80));
-    if (_thumbByte != null)
-      setState(() => albumThumb = _thumbByte);
-    else
-      setState(() => hasError = true);
+  void _getAlbumThumb(AssetPathEntity album) async {
+    final media = await album.getAssetListPaged(page: 0, size: 1);
+
+    if (media.isNotEmpty) {
+      final _thumbByte =
+          await media[0].thumbnailDataWithSize(ThumbnailSize(80, 80));
+      if (_thumbByte != null) {
+        setState(() => albumThumb = _thumbByte);
+      } else {
+        setState(() => hasError = true);
+      }
+    }
   }
 }

@@ -45,7 +45,7 @@ class _MediaPickerState extends State<MediaPicker> {
   List<AssetPathEntity>? _albums;
 
   final PanelController _albumController = PanelController();
-  final HeaderController _headerController = HeaderController();
+  final _headerController = GlobalKey<HeaderState>();
 
   @override
   void initState() {
@@ -74,7 +74,6 @@ class _MediaPickerState extends State<MediaPicker> {
                         Positioned.fill(
                           child: MediaList(
                             album: _selectedAlbum!,
-                            headerController: _headerController,
                             previousList: widget.mediaList,
                             mediaCount: widget.mediaCount,
                             decoration: widget.decoration,
@@ -86,7 +85,7 @@ class _MediaPickerState extends State<MediaPicker> {
                           albums: _albums!,
                           decoration: widget.decoration!,
                           onSelect: (album) {
-                            _headerController.closeAlbumDrawer!();
+                            _headerController.currentState?.closeAlbumDrawer();
                             setState(() => _selectedAlbum = album);
                           },
                         ),
@@ -106,19 +105,20 @@ class _MediaPickerState extends State<MediaPicker> {
       onDone: widget.onPick,
       albumController: _albumController,
       selectedAlbum: _selectedAlbum!,
-      controller: _headerController,
       mediaCount: widget.mediaCount,
       decoration: _decoration,
     );
   }
 
-  _fetchAlbums() async {
+  void _fetchAlbums() async {
     RequestType type = RequestType.common;
-    if (widget.mediaType == MediaType.all)
+    if (widget.mediaType == MediaType.all) {
       type = RequestType.common;
-    else if (widget.mediaType == MediaType.video)
+    } else if (widget.mediaType == MediaType.video) {
       type = RequestType.video;
-    else if (widget.mediaType == MediaType.image) type = RequestType.image;
+    } else if (widget.mediaType == MediaType.image) {
+      type = RequestType.image;
+    }
 
     PermissionState result = await PhotoManager.requestPermissionExtend();
     if (result == PermissionState.authorized ||
@@ -135,19 +135,19 @@ class _MediaPickerState extends State<MediaPicker> {
   }
 
   void handleBackPress() {
-    if (_albumController.isPanelOpen)
+    if (_albumController.isPanelOpen) {
       _albumController.close();
-    else
+    } else {
       widget.onCancel();
+    }
   }
 }
 
 ///call this function to capture and get media from camera
-openCamera(
-    {
-
-    ///callback when capturing is done
-    required ValueChanged<Media> onCapture}) async {
+void openCamera({
+  ///callback when capturing is done
+  required ValueChanged<Media> onCapture,
+}) async {
   final ImagePicker _picker = ImagePicker();
   final XFile? pickedFile = await _picker.pickImage(source: ImageSource.camera);
 

@@ -11,9 +11,9 @@ dependencies:
   flutter:
     sdk: flutter
 
-  photo_manager: '>=2.2.0 <=2.2.0'
-  sliding_up_panel: '>=1.0.1 <=2.0.0+1'
-  image_picker: '>=0.8.2 <=0.8.5+3'
+  photo_manager: ^2.5.0
+  sliding_up_panel: ^2.0.0+1
+  image_picker: ^0.8.6
 
 dev_dependencies:
   flutter_test:

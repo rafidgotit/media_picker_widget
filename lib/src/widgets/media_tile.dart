@@ -168,20 +168,18 @@ class _MediaTileState extends State<MediaTile>
 }
 
 Future<Media> convertToMedia({required AssetEntity media}) async {
-  Media convertedMedia = Media();
-  convertedMedia.file = await media.file;
-  convertedMedia.mediaByte = await media.originBytes;
-  convertedMedia.thumbnail =
-      await media.thumbnailDataWithSize(ThumbnailSize(200, 200));
-  convertedMedia.id = media.id;
-  convertedMedia.size = media.size;
-  convertedMedia.title = media.title;
-  convertedMedia.creationTime = media.createDateTime;
-
-  MediaType mediaType = MediaType.all;
+  var mediaType = MediaType.all;
   if (media.type == AssetType.video) mediaType = MediaType.video;
   if (media.type == AssetType.image) mediaType = MediaType.image;
-  convertedMedia.mediaType = mediaType;
 
-  return convertedMedia;
+  return Media(
+    file: await media.file,
+    mediaByte: await media.originBytes,
+    thumbnail: await media.thumbnailDataWithSize(ThumbnailSize(200, 200)),
+    id: media.id,
+    size: media.size,
+    title: media.title,
+    creationTime: media.createDateTime,
+    mediaType: mediaType,
+  );
 }

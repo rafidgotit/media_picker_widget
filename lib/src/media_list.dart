@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 import '../media_picker_widget.dart';
-import 'header_controller.dart';
+import 'header.dart';
 import 'widgets/media_tile.dart';
 
 class MediaList extends StatefulWidget {
   MediaList({
     required this.album,
-    required this.headerController,
     required this.previousList,
     this.mediaCount,
     this.decoration,
@@ -16,7 +15,6 @@ class MediaList extends StatefulWidget {
   });
 
   final AssetPathEntity album;
-  final HeaderController headerController;
   final List<Media> previousList;
   final MediaCount? mediaCount;
   final PickerDecoration? decoration;
@@ -34,13 +32,15 @@ class _MediaListState extends State<MediaList> {
 
   List<Media> selectedMedias = [];
 
+  final _headerController = GlobalKey<HeaderState>();
+
   @override
   void initState() {
     album = widget.album;
     if (widget.mediaCount == MediaCount.multiple) {
       selectedMedias.addAll(widget.previousList);
-      WidgetsBinding.instance.addPostFrameCallback(
-          (_) => widget.headerController.updateSelection!(selectedMedias));
+      WidgetsBinding.instance.addPostFrameCallback((_) =>
+          _headerController.currentState?.updateSelection(selectedMedias));
     }
     _fetchNewMedia();
     super.initState();
@@ -85,9 +85,9 @@ class _MediaListState extends State<MediaList> {
     }
   }
 
-  _fetchNewMedia() async {
+  void _fetchNewMedia() async {
     lastPage = currentPage;
-    PermissionState result = await PhotoManager.requestPermissionExtend();
+    final result = await PhotoManager.requestPermissionExtend();
     if (result == PermissionState.authorized ||
         result == PermissionState.limited) {
       List<AssetEntity> media =
@@ -98,12 +98,13 @@ class _MediaListState extends State<MediaList> {
         temp.add(MediaTile(
           media: asset,
           onSelected: (isSelected, media) {
-            if (isSelected)
+            if (isSelected) {
               setState(() => selectedMedias.add(media));
-            else
+            } else {
               setState(() => selectedMedias
                   .removeWhere((_media) => _media.id == media.id));
-            widget.headerController.updateSelection!(selectedMedias);
+            }
+            _headerController.currentState?.updateSelection(selectedMedias);
           },
           isSelected: isPreviouslySelected(asset),
           decoration: widget.decoration,

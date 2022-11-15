@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import '../media_picker_widget.dart';
 
 class HeaderController {
-  HeaderController();
+  HeaderController({
+    this.updateSelection,
+    this.closeAlbumDrawer,
+  });
 
-  ValueChanged<List<Media>>? updateSelection;
-  VoidCallback? closeAlbumDrawer;
+  final ValueChanged<List<Media>>? updateSelection;
+  final VoidCallback? closeAlbumDrawer;
 }

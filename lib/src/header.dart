@@ -14,7 +14,6 @@ class Header extends StatefulWidget {
     required this.onBack,
     required this.onDone,
     required this.albumController,
-    required this.controller,
     this.mediaCount,
     this.decoration,
   });
@@ -23,39 +22,35 @@ class Header extends StatefulWidget {
   final VoidCallback onBack;
   final PanelController albumController;
   final ValueChanged<List<Media>> onDone;
-  final HeaderController controller;
   final MediaCount? mediaCount;
   final PickerDecoration? decoration;
 
   @override
-  _HeaderState createState() => _HeaderState();
+  HeaderState createState() => HeaderState();
 }
 
-class _HeaderState extends State<Header> with TickerProviderStateMixin {
+class HeaderState extends State<Header> with TickerProviderStateMixin {
   List<Media> selectedMedia = [];
 
-  var _arrowAnimation;
-  AnimationController? _arrowAnimController;
+  late final _arrowAnimController = AnimationController(
+    vsync: this,
+    duration: Duration(milliseconds: 100),
+  );
 
-  @override
-  void initState() {
-    _arrowAnimController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 100));
-    _arrowAnimation =
-        Tween<double>(begin: 0, end: 1).animate(_arrowAnimController!);
+  late final _arrowAnimation =
+      Tween<double>(begin: 0, end: 1).animate(_arrowAnimController);
 
-    widget.controller.updateSelection = (selectedMediaList) {
-      if (widget.mediaCount == MediaCount.multiple)
-        setState(() => selectedMedia = selectedMediaList.cast<Media>());
-      else if (selectedMediaList.length == 1) widget.onDone(selectedMediaList);
-    };
+  void updateSelection(selectedMediaList) {
+    if (widget.mediaCount == MediaCount.multiple) {
+      setState(() => selectedMedia = selectedMediaList.cast<Media>());
+    } else if (selectedMediaList.length == 1) {
+      widget.onDone(selectedMediaList);
+    }
+  }
 
-    widget.controller.closeAlbumDrawer = () {
-      widget.albumController.close();
-      _arrowAnimController!.reverse();
-    };
-
-    super.initState();
+  void closeAlbumDrawer() {
+    widget.albumController.close();
+    _arrowAnimController.reverse();
   }
 
   @override
@@ -70,8 +65,9 @@ class _HeaderState extends State<Header> with TickerProviderStateMixin {
                 icon: widget.decoration!.cancelIcon ??
                     Icon(Icons.arrow_back_outlined),
                 onPressed: () {
-                  if (_arrowAnimation.value == 1)
-                    _arrowAnimController!.reverse();
+                  if (_arrowAnimation.value == 1) {
+                    _arrowAnimController.reverse();
+                  }
                   widget.onBack();
                 }),
           ),
@@ -123,11 +119,11 @@ class _HeaderState extends State<Header> with TickerProviderStateMixin {
                 onTap: () {
                   if (widget.albumController.isPanelOpen) {
                     widget.albumController.close();
-                    _arrowAnimController!.reverse();
+                    _arrowAnimController.reverse();
                   }
                   if (widget.albumController.isPanelClosed) {
                     widget.albumController.open();
-                    _arrowAnimController!.forward();
+                    _arrowAnimController.forward();
                   }
                 },
               ),

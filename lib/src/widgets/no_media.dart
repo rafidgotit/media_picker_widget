@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
 
 class NoMedia extends StatelessWidget {
+  final String? text;
+
+  const NoMedia({
+    Key? key,
+    this.text,
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Opacity(
@@ -15,8 +22,10 @@ class NoMedia extends StatelessWidget {
             ),
             SizedBox(height: 20),
             Text(
-              'No Images Available',
-              style: TextStyle(fontSize: 20),
+              text ?? 'No Images Available',
+              style: TextStyle(
+                fontSize: 20,
+              ),
             ),
           ],
         ),
