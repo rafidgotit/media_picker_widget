@@ -70,6 +70,10 @@ class _MediaPickerState extends State<MediaPicker> {
 
   void _onMediaTilePressed(Media media, List<Media> selectedMedias) {
     _headerController.currentState?.updateSelection(selectedMedias);
+
+    setState(() {
+      _selectedMedias = selectedMedias;
+    });
   }
 
   @override
