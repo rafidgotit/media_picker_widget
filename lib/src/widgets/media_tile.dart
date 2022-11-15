@@ -36,7 +36,7 @@ class _MediaTileState extends State<MediaTile>
       Tween<double>(begin: 1.0, end: 1.3).animate(_animationController);
 
   void _onTap(Media media) {
-    setState(() => _selected = _selected);
+    setState(() => _selected = !_selected);
     if (_selected) {
       _animationController.forward();
     } else {

@@ -30,7 +30,7 @@ class _MediaListState extends State<MediaList> {
   var _currentPage = 0;
   late var _lastPage = _currentPage;
   late AssetPathEntity _album = widget.album;
-  late List<Media> _selectedMedias = [...widget.previousList];
+  late final _selectedMedias = [...widget.previousList];
 
   @override
   void initState() {
