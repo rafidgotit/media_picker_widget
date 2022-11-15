@@ -143,7 +143,7 @@ class AlbumTile extends StatelessWidget {
       );
     }
 
-    if (snapshot.connectionState == ConnectionState.waiting) {
+    if (snapshot.connectionState == ConnectionState.done) {
       final albumThumb = snapshot.data;
 
       if (albumThumb == null) {
