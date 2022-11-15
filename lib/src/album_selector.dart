@@ -23,6 +23,14 @@ class AlbumSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constrains) {
+      final albumTiles = albums
+          .map((album) => AlbumTile(
+                album: album,
+                onSelect: () => onSelect(album),
+                decoration: decoration,
+              ))
+          .toList(growable: false);
+
       return SlidingUpPanel(
         controller: panelController,
         minHeight: 0,
@@ -30,16 +38,10 @@ class AlbumSelector extends StatelessWidget {
         boxShadow: [],
         maxHeight: constrains.maxHeight,
         panelBuilder: (sc) {
-          return ListView(
+          return ListView.builder(
             controller: sc,
-            children: List<Widget>.generate(
-              albums.length,
-              (index) => AlbumTile(
-                album: albums[index],
-                onSelect: () => onSelect(albums[index]),
-                decoration: decoration,
-              ),
-            ),
+            itemBuilder: (_, index) => albumTiles[index],
+            itemCount: albumTiles.length,
           );
         },
       );
@@ -131,7 +133,17 @@ class AlbumTile extends StatelessWidget {
     BuildContext context,
     AsyncSnapshot<Uint8List?> snapshot,
   ) {
-    if (snapshot.hasData) {
+    if (snapshot.hasError) {
+      return Center(
+        child: Icon(
+          Icons.error_outline,
+          color: Colors.grey.shade400,
+          size: 40,
+        ),
+      );
+    }
+
+    if (snapshot.connectionState == ConnectionState.waiting) {
       final albumThumb = snapshot.data;
 
       if (albumThumb == null) {
