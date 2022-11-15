@@ -73,27 +73,25 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void openImagePicker(BuildContext context) {
-    // openCamera(onCapture: (image){
-    //   setState(()=> mediaList = [image]);
-    // });
     showModalBottomSheet(
-        context: context,
-        builder: (context) {
-          return MediaPicker(
-            mediaList: mediaList,
-            onPick: (selectedList) {
-              setState(() => mediaList = selectedList);
-              Navigator.pop(context);
-            },
-            onCancel: () => Navigator.pop(context),
-            mediaCount: MediaCount.multiple,
-            mediaType: MediaType.image,
-            decoration: PickerDecoration(
-              actionBarPosition: ActionBarPosition.top,
-              blurStrength: 2,
-              completeText: 'Next',
-            ),
-          );
-        });
+      context: context,
+      builder: (context) {
+        return MediaPicker(
+          mediaList: mediaList,
+          onPick: (selectedList) {
+            setState(() => mediaList = selectedList);
+            Navigator.pop(context);
+          },
+          onCancel: () => Navigator.pop(context),
+          mediaCount: MediaCount.multiple,
+          mediaType: MediaType.image,
+          decoration: PickerDecoration(
+            actionBarPosition: ActionBarPosition.top,
+            blurStrength: 2,
+            completeText: 'Next',
+          ),
+        );
+      },
+    );
   }
 }

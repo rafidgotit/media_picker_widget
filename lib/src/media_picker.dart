@@ -45,6 +45,7 @@ class _MediaPickerState extends State<MediaPicker> {
   final _headerController = GlobalKey<HeaderState>();
 
   AssetPathEntity? _selectedAlbum;
+  late List<Media> _selectedMedias = [...widget.mediaList];
 
   Future<List<AssetPathEntity>> _fetchAlbums() async {
     var type = RequestType.common;
@@ -64,6 +65,19 @@ class _MediaPickerState extends State<MediaPicker> {
       PhotoManager.openSetting();
 
       return [];
+    }
+  }
+
+  void _onMediaTilePressed(Media media, List<Media> selectedMedias) {
+    _headerController.currentState?.updateSelection(selectedMedias);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.mediaCount == MediaCount.multiple) {
+      WidgetsBinding.instance.addPostFrameCallback((_) =>
+          _headerController.currentState?.updateSelection(_selectedMedias));
     }
   }
 
@@ -121,10 +135,11 @@ class _MediaPickerState extends State<MediaPicker> {
                   Positioned.fill(
                     child: MediaList(
                       album: _selectedAlbum ?? defaultSelectedAlbum,
-                      previousList: widget.mediaList,
+                      previousList: _selectedMedias,
                       mediaCount: widget.mediaCount,
                       decoration: _decoration,
                       scrollController: widget.scrollController,
+                      onMediaTilePressed: _onMediaTilePressed,
                     ),
                   ),
                   AlbumSelector(

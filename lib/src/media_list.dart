@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 import '../media_picker_widget.dart';
-import 'header.dart';
 import 'widgets/media_tile.dart';
 
 class MediaList extends StatefulWidget {
@@ -12,6 +11,7 @@ class MediaList extends StatefulWidget {
     this.mediaCount,
     required this.decoration,
     this.scrollController,
+    required this.onMediaTilePressed,
   });
 
   final AssetPathEntity album;
@@ -19,6 +19,7 @@ class MediaList extends StatefulWidget {
   final MediaCount? mediaCount;
   final PickerDecoration decoration;
   final ScrollController? scrollController;
+  final Function(Media media, List<Media> selectedMedias) onMediaTilePressed;
 
   @override
   _MediaListState createState() => _MediaListState();
@@ -29,24 +30,16 @@ class _MediaListState extends State<MediaList> {
   var _currentPage = 0;
   late var _lastPage = _currentPage;
   late AssetPathEntity _album = widget.album;
-
   late List<Media> _selectedMedias = [...widget.previousList];
-
-  final _headerController = GlobalKey<HeaderState>();
 
   @override
   void initState() {
-    if (widget.mediaCount == MediaCount.multiple) {
-      WidgetsBinding.instance.addPostFrameCallback((_) =>
-          _headerController.currentState?.updateSelection(_selectedMedias));
-    }
     _fetchNewMedia();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    _resetAlbum();
     return NotificationListener<ScrollNotification>(
       onNotification: (ScrollNotification scroll) {
         _handleScrollEvent(scroll);
@@ -61,15 +54,6 @@ class _MediaListState extends State<MediaList> {
         itemBuilder: (_, index) => _mediaList[index],
       ),
     );
-  }
-
-  void _resetAlbum() {
-    if (_album.id != widget.album.id) {
-      _mediaList.clear();
-      _album = widget.album;
-      _currentPage = 0;
-      _fetchNewMedia();
-    }
   }
 
   void _handleScrollEvent(ScrollNotification scroll) {
@@ -120,6 +104,6 @@ class _MediaListState extends State<MediaList> {
       setState(
           () => _selectedMedias.removeWhere((_media) => _media.id == media.id));
     }
-    _headerController.currentState?.updateSelection(_selectedMedias);
+    widget.onMediaTilePressed(media, _selectedMedias);
   }
 }
