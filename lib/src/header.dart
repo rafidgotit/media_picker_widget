@@ -34,7 +34,6 @@ class HeaderState extends State<Header> with TickerProviderStateMixin {
   static const _arrowUp = 1.0;
 
   List<Media> _selectedMedia = [];
-  var _selectedCount = 0;
 
   late final _arrowAnimController = AnimationController(
     vsync: this,
@@ -50,7 +49,6 @@ class HeaderState extends State<Header> with TickerProviderStateMixin {
     if (widget.mediaCount == MediaCount.multiple) {
       setState(() {
         _selectedMedia = selectedMediaList;
-        _selectedCount = _selectedMedia.length;
       });
     } else if (selectedMediaList.length == 1) {
       widget.onDone(selectedMediaList);
@@ -138,8 +136,10 @@ class HeaderState extends State<Header> with TickerProviderStateMixin {
               ),
             ),
           ),
-          if (widget.mediaCount == MediaCount.multiple)
-            Expanded(
+          Visibility(
+            visible: widget.mediaCount == MediaCount.multiple &&
+                _selectedMedia.isNotEmpty,
+            child: Expanded(
               flex: 1,
               child: AnimatedSwitcher(
                 duration: Duration(milliseconds: 100),
@@ -151,54 +151,51 @@ class HeaderState extends State<Header> with TickerProviderStateMixin {
                         .animate(animation),
                   );
                 },
-                child: (_selectedCount > 0)
-                    ? TextButton(
-                        key: Key('button'),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              widget.decoration.completeText,
-                              style: widget.decoration.completeTextStyle ??
-                                  TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                  ),
+                child: TextButton(
+                  key: Key('button'),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        widget.decoration.completeText,
+                        style: widget.decoration.completeTextStyle ??
+                            TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
                             ),
-                            Text(
-                              ' (${_selectedMedia.length})',
-                              style: TextStyle(
-                                color: widget
-                                        .decoration.completeTextStyle?.color ??
-                                    Colors.white,
-                                fontSize: widget.decoration.completeTextStyle
-                                            ?.fontSize !=
-                                        null
-                                    ? widget.decoration.completeTextStyle!
-                                            .fontSize! *
-                                        0.77
-                                    : 11,
-                                fontWeight: FontWeight.w300,
-                              ),
-                            ),
-                          ],
+                      ),
+                      Text(
+                        ' (${_selectedMedia.length})',
+                        style: TextStyle(
+                          color: widget.decoration.completeTextStyle?.color ??
+                              Colors.white,
+                          fontSize: widget
+                                      .decoration.completeTextStyle?.fontSize !=
+                                  null
+                              ? widget.decoration.completeTextStyle!.fontSize! *
+                                  0.77
+                              : 11,
+                          fontWeight: FontWeight.w300,
                         ),
-                        onPressed: _selectedMedia.length > 0
-                            ? () => widget.onDone(_selectedMedia)
-                            : null,
-                        style: widget.decoration.completeButtonStyle ??
-                            TextButton.styleFrom(
-                              backgroundColor: Theme.of(context).primaryColor,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(3),
-                              ),
-                            ),
-                      )
-                    : null,
+                      ),
+                    ],
+                  ),
+                  onPressed: _selectedMedia.length > 0
+                      ? () => widget.onDone(_selectedMedia)
+                      : null,
+                  style: widget.decoration.completeButtonStyle ??
+                      TextButton.styleFrom(
+                        backgroundColor: Theme.of(context).primaryColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(3),
+                        ),
+                      ),
+                ),
               ),
             ),
+          ),
         ],
       ),
     );
