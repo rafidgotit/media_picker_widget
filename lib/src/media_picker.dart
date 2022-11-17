@@ -4,17 +4,18 @@ part of media_picker_widget;
 class MediaPicker extends StatefulWidget {
   ///The MediaPicker constructor that will select media files form storage
   MediaPicker({
-    required this.onPick,
+    required this.onPicked,
     required this.mediaList,
     required this.onCancel,
     this.mediaCount = MediaCount.multiple,
     this.mediaType = MediaType.all,
     this.decoration,
     this.scrollController,
+    this.onPicking,
   });
 
   ///CallBack on image pick is done
-  final ValueChanged<List<Media>> onPick;
+  final ValueChanged<List<Media>> onPicked;
 
   ///Previously selected list of media in your app
   final List<Media> mediaList;
@@ -33,6 +34,9 @@ class MediaPicker extends StatefulWidget {
 
   ///assign a scroll controller to Media GridView of Picker
   final ScrollController? scrollController;
+
+  ///CallBack on image picking
+  final ValueChanged<List<Media>>? onPicking;
 
   @override
   _MediaPickerState createState() => _MediaPickerState();
@@ -74,6 +78,8 @@ class _MediaPickerState extends State<MediaPicker> {
     setState(() {
       _selectedMedias = selectedMedias;
     });
+
+    widget.onPicking?.call(selectedMedias);
   }
 
   @override
@@ -118,7 +124,7 @@ class _MediaPickerState extends State<MediaPicker> {
               Header(
                 key: _headerController,
                 onBack: handleBackPress,
-                onDone: widget.onPick,
+                onDone: widget.onPicked,
                 albumController: _albumController,
                 selectedAlbum: _selectedAlbum ?? defaultSelectedAlbum,
                 mediaCount: widget.mediaCount,
@@ -151,7 +157,7 @@ class _MediaPickerState extends State<MediaPicker> {
               Header(
                 key: _headerController,
                 onBack: handleBackPress,
-                onDone: widget.onPick,
+                onDone: widget.onPicked,
                 albumController: _albumController,
                 selectedAlbum: _selectedAlbum ?? defaultSelectedAlbum,
                 mediaCount: widget.mediaCount,
