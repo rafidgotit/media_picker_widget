@@ -147,7 +147,7 @@ class HeaderState extends State<Header> with TickerProviderStateMixin {
                         .animate(animation),
                   );
                 },
-                child: (_selectedMedia.isNotEmpty)
+                child: (_selectedMedia.length > 0)
                     ? TextButton(
                         key: Key('button'),
                         child: Row(
