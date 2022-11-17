@@ -77,15 +77,6 @@ class _MediaPickerState extends State<MediaPicker> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    if (widget.mediaCount == MediaCount.multiple) {
-      WidgetsBinding.instance.addPostFrameCallback((_) =>
-          _headerController.currentState?.updateSelection(_selectedMedias));
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
@@ -132,6 +123,7 @@ class _MediaPickerState extends State<MediaPicker> {
                 selectedAlbum: _selectedAlbum ?? defaultSelectedAlbum,
                 mediaCount: widget.mediaCount,
                 decoration: _decoration,
+                selectedMedias: _selectedMedias,
               ),
             Expanded(
               child: Stack(
@@ -164,6 +156,7 @@ class _MediaPickerState extends State<MediaPicker> {
                 selectedAlbum: _selectedAlbum ?? defaultSelectedAlbum,
                 mediaCount: widget.mediaCount,
                 decoration: _decoration,
+                selectedMedias: _selectedMedias,
               ),
           ],
         );

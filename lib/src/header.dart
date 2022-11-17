@@ -16,6 +16,7 @@ class Header extends StatefulWidget {
     required this.albumController,
     this.mediaCount,
     required this.decoration,
+    this.selectedMedias,
   }) : super(key: key);
 
   final AssetPathEntity selectedAlbum;
@@ -24,6 +25,7 @@ class Header extends StatefulWidget {
   final ValueChanged<List<Media>> onDone;
   final MediaCount? mediaCount;
   final PickerDecoration decoration;
+  final List<Media>? selectedMedias;
 
   @override
   HeaderState createState() => HeaderState();
@@ -33,7 +35,7 @@ class HeaderState extends State<Header> with TickerProviderStateMixin {
   static const _arrowDown = 0.0;
   static const _arrowUp = 1.0;
 
-  List<Media> _selectedMedia = [];
+  late List<Media> _selectedMedia = [...?widget.selectedMedias];
 
   late final _arrowAnimController = AnimationController(
     vsync: this,
