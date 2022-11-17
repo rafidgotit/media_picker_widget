@@ -34,6 +34,7 @@ class HeaderState extends State<Header> with TickerProviderStateMixin {
   static const _arrowUp = 1.0;
 
   List<Media> _selectedMedia = [];
+  var _selectedCount = 0;
 
   late final _arrowAnimController = AnimationController(
     vsync: this,
@@ -47,7 +48,10 @@ class HeaderState extends State<Header> with TickerProviderStateMixin {
 
   void updateSelection(List<Media> selectedMediaList) {
     if (widget.mediaCount == MediaCount.multiple) {
-      setState(() => _selectedMedia = selectedMediaList);
+      setState(() {
+        _selectedMedia = selectedMediaList;
+        _selectedCount = _selectedMedia.length;
+      });
     } else if (selectedMediaList.length == 1) {
       widget.onDone(selectedMediaList);
     }
@@ -147,7 +151,7 @@ class HeaderState extends State<Header> with TickerProviderStateMixin {
                         .animate(animation),
                   );
                 },
-                child: (_selectedMedia.length > 0)
+                child: (_selectedCount > 0)
                     ? TextButton(
                         key: Key('button'),
                         child: Row(
