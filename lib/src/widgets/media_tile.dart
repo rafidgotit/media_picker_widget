@@ -28,6 +28,7 @@ class MediaTile extends StatefulWidget {
 class _MediaTileState extends State<MediaTile>
     with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
   late var _selected = widget.isSelected;
+  Media? _media;
 
   final _duration = const Duration(milliseconds: 100);
   late final AnimationController _animationController =
@@ -50,6 +51,8 @@ class _MediaTileState extends State<MediaTile>
 
   @override
   void initState() {
+    _convertToMedia(media: widget.media)
+        .then((value) => setState(() => _media = value));
     if (_selected) {
       _animationController.forward();
     }
@@ -59,27 +62,22 @@ class _MediaTileState extends State<MediaTile>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return FutureBuilder(
-      future: _convertToMedia(media: widget.media),
-      builder: _builder,
-    );
-  }
 
-  Widget _builder(
-    BuildContext context,
-    AsyncSnapshot<Media> snapshot,
-  ) {
-    if (snapshot.hasData) {
-      final media = snapshot.data!;
-
-      return Padding(
+    return AnimatedCrossFade(
+      crossFadeState:
+          _media == null ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+      duration: _duration,
+      firstChild: LoadingWidget(
+        decoration: widget.decoration,
+      ),
+      secondChild: Padding(
         padding: const EdgeInsets.all(0.5),
         child: Stack(
           children: [
             Positioned.fill(
-              child: media.thumbnail != null
+              child: _media?.thumbnail != null
                   ? JumpingButton(
-                      onTap: () => _onTap(media),
+                      onTap: () => _onTap(_media!),
                       child: Stack(
                         children: [
                           Positioned.fill(
@@ -100,7 +98,7 @@ class _MediaTileState extends State<MediaTile>
                                       child: Transform.scale(
                                         scale: _animation.value,
                                         child: Image.memory(
-                                          media.thumbnail!,
+                                          _media!.thumbnail!,
                                           fit: BoxFit.cover,
                                         ),
                                       ),
@@ -167,12 +165,8 @@ class _MediaTileState extends State<MediaTile>
             ),
           ],
         ),
-      );
-    } else {
-      return LoadingWidget(
-        decoration: widget.decoration,
-      );
-    }
+      ),
+    );
   }
 }
 

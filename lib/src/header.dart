@@ -62,14 +62,26 @@ class HeaderState extends State<Header> with TickerProviderStateMixin {
     _arrowAnimController.reverse();
   }
 
+  void _onLabelPressed() {
+    if (widget.albumController.isPanelOpen) {
+      widget.albumController.close();
+      _arrowAnimController.reverse();
+    }
+    if (widget.albumController.isPanelClosed) {
+      widget.albumController.open();
+      _arrowAnimController.forward();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+    return SizedBox(
+      height: 46.0,
+      child: Stack(
+        alignment: Alignment.center,
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6),
+          Positioned(
+            left: 6.0,
             child: IconButton(
               icon: widget.decoration.cancelIcon ??
                   Icon(Icons.arrow_back_outlined),
@@ -81,76 +93,67 @@ class HeaderState extends State<Header> with TickerProviderStateMixin {
               },
             ),
           ),
-          Expanded(
-            flex: 3,
-            child: Center(
-              child: JumpingButton(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    AnimatedSwitcher(
-                      duration: Duration(milliseconds: 200),
-                      transitionBuilder:
-                          (Widget child, Animation<double> animation) {
-                        return SlideTransition(
-                          child: child,
-                          position: Tween<Offset>(
-                            begin: Offset(0.0, -0.5),
-                            end: Offset(0.0, 0.0),
-                          ).animate(animation),
-                        );
-                      },
-                      child: Text(
-                        widget.selectedAlbum.name,
-                        style: widget.decoration.albumTitleStyle,
-                        key: ValueKey<String>(widget.selectedAlbum.id),
-                      ),
-                    ),
-                    AnimatedBuilder(
-                      animation: _arrowAnimation,
-                      builder: (context, child) => Transform.rotate(
-                        angle: _arrowAnimation.value * pi,
-                        child: Icon(
-                          Icons.keyboard_arrow_up_outlined,
-                          size: (widget.decoration.albumTitleStyle?.fontSize) !=
-                                  null
-                              ? widget.decoration.albumTitleStyle!.fontSize! *
-                                  1.5
-                              : 20,
-                          color: widget.decoration.albumTitleStyle?.color ??
-                              Theme.of(context).primaryColor,
-                        ),
-                      ),
-                    ),
-                  ],
+          JumpingButton(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                AnimatedSwitcher(
+                  duration: Duration(milliseconds: 200),
+                  transitionBuilder: (
+                    Widget child,
+                    Animation<double> animation,
+                  ) {
+                    return SlideTransition(
+                      child: child,
+                      position: Tween<Offset>(
+                        begin: Offset(0.0, -0.5),
+                        end: Offset(0.0, 0.0),
+                      ).animate(animation),
+                    );
+                  },
+                  child: Text(
+                    widget.selectedAlbum.name,
+                    style: widget.decoration.albumTitleStyle,
+                    key: ValueKey<String>(widget.selectedAlbum.id),
+                  ),
                 ),
-                onTap: () {
-                  if (widget.albumController.isPanelOpen) {
-                    widget.albumController.close();
-                    _arrowAnimController.reverse();
-                  }
-                  if (widget.albumController.isPanelClosed) {
-                    widget.albumController.open();
-                    _arrowAnimController.forward();
-                  }
-                },
-              ),
+                AnimatedBuilder(
+                  animation: _arrowAnimation,
+                  builder: (context, child) => Transform.rotate(
+                    angle: _arrowAnimation.value * pi,
+                    child: Icon(
+                      Icons.keyboard_arrow_up_outlined,
+                      size: (widget.decoration.albumTitleStyle?.fontSize) !=
+                              null
+                          ? widget.decoration.albumTitleStyle!.fontSize! * 1.5
+                          : 20,
+                      color: widget.decoration.albumTitleStyle?.color ??
+                          Theme.of(context).primaryColor,
+                    ),
+                  ),
+                ),
+              ],
             ),
+            onTap: _onLabelPressed,
           ),
           Visibility(
             visible: widget.mediaCount == MediaCount.multiple &&
                 _selectedMedia.isNotEmpty,
-            child: Expanded(
-              flex: 1,
+            child: Positioned(
+              right: 6.0,
               child: AnimatedSwitcher(
                 duration: Duration(milliseconds: 100),
-                transitionBuilder: (Widget child, Animation<double> animation) {
+                transitionBuilder: (
+                  Widget child,
+                  Animation<double> animation,
+                ) {
                   return SlideTransition(
                     child: child,
                     position: Tween<Offset>(
-                            begin: Offset(1, 0.0), end: Offset(0.0, 0.0))
-                        .animate(animation),
+                      begin: Offset(1, 0.0),
+                      end: Offset(0.0, 0.0),
+                    ).animate(animation),
                   );
                 },
                 child: TextButton(

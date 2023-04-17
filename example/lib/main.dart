@@ -78,7 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
       builder: (context) {
         return MediaPicker(
           mediaList: mediaList,
-          onPick: (selectedList) {
+          onPicked: (selectedList) {
             setState(() => mediaList = selectedList);
             Navigator.pop(context);
           },

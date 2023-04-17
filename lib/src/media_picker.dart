@@ -116,7 +116,7 @@ class _MediaPickerState extends State<MediaPicker> {
       if (albums.isEmpty) {
         return NoMedia(text: _decoration.noMedia);
       } else {
-        final defaultSelectedAlbum = albums[0];
+        final defaultSelectedAlbum = albums.first;
 
         return Column(
           children: [
@@ -168,8 +168,10 @@ class _MediaPickerState extends State<MediaPicker> {
         );
       }
     } else {
-      return LoadingWidget(
-        decoration: _decoration,
+      return Center(
+        child: LoadingWidget(
+          decoration: _decoration,
+        ),
       );
     }
   }

@@ -34,8 +34,20 @@ class _MediaListState extends State<MediaList> {
 
   @override
   void initState() {
-    _fetchNewMedia();
+    _fetchNewMedia(refresh: true);
     super.initState();
+  }
+
+  @override
+  void didUpdateWidget(covariant MediaList oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _album = widget.album;
+    final isRefresh = oldWidget.album.id != _album.id;
+    if (isRefresh) {
+      _fetchNewMedia(
+        refresh: isRefresh,
+      );
+    }
   }
 
   @override
@@ -59,12 +71,20 @@ class _MediaListState extends State<MediaList> {
   void _handleScrollEvent(ScrollNotification scroll) {
     if (scroll.metrics.pixels / scroll.metrics.maxScrollExtent > 0.33) {
       if (_currentPage != _lastPage) {
-        _fetchNewMedia();
+        _fetchNewMedia(
+          refresh: false,
+        );
       }
     }
   }
 
-  void _fetchNewMedia() async {
+  void _fetchNewMedia({required bool refresh}) async {
+    if (refresh) {
+      setState(() {
+        _currentPage = 0;
+        _mediaList.clear();
+      });
+    }
     _lastPage = _currentPage;
     final result = await PhotoManager.requestPermissionExtend();
     if (result == PermissionState.authorized ||
@@ -73,13 +93,16 @@ class _MediaListState extends State<MediaList> {
         page: _currentPage,
         size: 60,
       );
+      if (media.isEmpty) {
+        return;
+      }
       List<Widget> temp = [];
 
       for (var asset in media) {
         temp.add(MediaTile(
           media: asset,
           onSelected: _onMediaTileSelected,
-          isSelected: isPreviouslySelected(asset),
+          isSelected: _isPreviouslySelected(asset),
           decoration: widget.decoration,
         ));
       }
@@ -93,7 +116,7 @@ class _MediaListState extends State<MediaList> {
     }
   }
 
-  bool isPreviouslySelected(AssetEntity media) {
+  bool _isPreviouslySelected(AssetEntity media) {
     return _selectedMedias.any((element) => element.id == media.id);
   }
 
