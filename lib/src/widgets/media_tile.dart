@@ -1,188 +1,133 @@
+import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:media_picker_widget/src/widgets/jumping_button.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 import '../../media_picker_widget.dart';
 import 'loading_widget.dart';
 
-class MediaTile extends StatefulWidget {
+class MediaTile extends StatelessWidget {
   MediaTile({
     Key? key,
     required this.media,
     required this.onSelected,
+    this.onThumbnailLoad,
     this.isSelected = false,
     required this.decoration,
   }) : super(key: key);
 
-  final AssetEntity media;
-  final Function(bool isSelected, Media media) onSelected;
+  final MediaViewModel media;
+  final Function(bool isSelected, MediaViewModel media) onSelected;
   final bool isSelected;
   final PickerDecoration decoration;
+  final ValueChanged<Uint8List?>? onThumbnailLoad;
 
-  @override
-  _MediaTileState createState() => _MediaTileState();
-}
+  final Duration _duration = Duration(milliseconds: 200);
 
-class _MediaTileState extends State<MediaTile>
-    with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
-  late var _selected = widget.isSelected;
-  Media? _media;
-
-  final _duration = const Duration(milliseconds: 100);
-  late final AnimationController _animationController =
-      AnimationController(vsync: this, duration: _duration);
-  late final _animation =
-      Tween<double>(begin: 1.0, end: 1.3).animate(_animationController);
-
-  void _onTap(Media media) {
-    setState(() => _selected = !_selected);
-    if (_selected) {
-      _animationController.forward();
-    } else {
-      _animationController.reverse();
-    }
-    widget.onSelected(_selected, media);
-  }
-
-  @override
-  bool get wantKeepAlive => true;
-
-  @override
-  void initState() {
-    _convertToMedia(media: widget.media)
-        .then((value) => setState(() => _media = value));
-    if (_selected) {
-      _animationController.forward();
-    }
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
+    var loadThumb = Future<Uint8List?>(() async {
+      var thumb = await media.thumbnailAsync;
+      onThumbnailLoad?.call(thumb);
+      return thumb;
+    });
 
-    return AnimatedCrossFade(
-      crossFadeState:
-          _media == null ? CrossFadeState.showFirst : CrossFadeState.showSecond,
-      duration: _duration,
-      firstChild: LoadingWidget(
-        decoration: widget.decoration,
-      ),
-      secondChild: Padding(
-        padding: const EdgeInsets.all(0.5),
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: _media?.thumbnail != null
-                  ? JumpingButton(
-                      onTap: () => _onTap(_media!),
-                      child: Stack(
-                        children: [
-                          Positioned.fill(
-                            child: ClipRect(
-                              child: AnimatedBuilder(
-                                  animation: _animation,
-                                  builder: (context, child) {
-                                    final amount =
-                                        (_animation.value - 1) * 3.33;
-
-                                    return ImageFiltered(
-                                      imageFilter: ImageFilter.blur(
-                                        sigmaX: widget.decoration.blurStrength *
-                                            amount,
-                                        sigmaY: widget.decoration.blurStrength *
-                                            amount,
-                                      ),
-                                      child: Transform.scale(
-                                        scale: _animation.value,
-                                        child: Image.memory(
-                                          _media!.thumbnail!,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                    );
-                                  }),
+    return FutureBuilder<Uint8List?>(
+      future: loadThumb,
+      builder: (context, snapshot) {
+        if(snapshot.hasError) return SizedBox();
+        if(!snapshot.hasData) return LoadingWidget(
+          decoration: decoration,
+        );
+        return Padding(
+          padding: const EdgeInsets.all(0.5),
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: media.thumbnail != null ? GestureDetector(
+                  onTap: () => onSelected(!isSelected, media),
+                  child: Stack(
+                    children: [
+                      Positioned.fill(
+                        child: ClipRect(
+                          child: ImageFiltered(
+                            imageFilter: ImageFilter.blur(
+                              sigmaX: isSelected ? decoration.blurStrength : 0,
+                              sigmaY: isSelected ? decoration.blurStrength : 0,
                             ),
-                          ),
-                          Positioned.fill(
-                            child: AnimatedOpacity(
-                              opacity: _selected ? 1 : 0,
-                              curve: Curves.easeOut,
+                            child: AnimatedScale(
                               duration: _duration,
-                              child: ClipRect(
-                                child: Container(
-                                  color: Colors.black26,
-                                ),
+                              scale: isSelected ? 1.2 : 1,
+                              child: Image.memory(
+                                media.thumbnail!,
+                                fit: BoxFit.cover,
                               ),
                             ),
                           ),
-                          if (widget.media.type == AssetType.video)
-                            Align(
-                              alignment: Alignment.bottomRight,
-                              child: Padding(
-                                padding: EdgeInsets.only(right: 5, bottom: 5),
-                                child: Icon(
-                                  Icons.videocam,
-                                  color: Colors.white,
-                                ),
-                              ),
+                        ),
+                      ),
+                      Positioned.fill(
+                        child: AnimatedOpacity(
+                          opacity: isSelected ? 1 : 0,
+                          curve: Curves.easeOut,
+                          duration: _duration,
+                          child: ClipRect(
+                            child: Container(
+                              color: Colors.black26,
                             ),
-                        ],
+                          ),
+                        ),
                       ),
-                    )
-                  : Center(
+                      if (media.type == AssetType.video)
+                        Align(
+                          alignment: Alignment.bottomRight,
+                          child: Padding(
+                            padding: EdgeInsets.only(right: 5, bottom: 5),
+                            child: Icon(
+                              Icons.videocam,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ) : Center(
+                  child: Icon(
+                    Icons.error_outline,
+                    color: Colors.grey.shade400,
+                    size: 40,
+                  ),
+                ),
+              ),
+              Align(
+                alignment: Alignment.topRight,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: AnimatedOpacity(
+                    curve: Curves.easeOut,
+                    duration: _duration,
+                    opacity: isSelected ? 1 : 0,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColor,
+                        shape: BoxShape.circle,
+                      ),
+                      padding: const EdgeInsets.all(5),
                       child: Icon(
-                        Icons.error_outline,
-                        color: Colors.grey.shade400,
-                        size: 40,
+                        Icons.done,
+                        size: 16,
+                        color: Colors.white,
                       ),
-                    ),
-            ),
-            Align(
-              alignment: Alignment.topRight,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: AnimatedOpacity(
-                  curve: Curves.easeOut,
-                  duration: _duration,
-                  opacity: _selected ? 1 : 0,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor,
-                      shape: BoxShape.circle,
-                    ),
-                    padding: const EdgeInsets.all(5),
-                    child: Icon(
-                      Icons.done,
-                      size: 16,
-                      color: Colors.white,
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
-      ),
+            ],
+          ),
+        );
+      }
     );
   }
-}
-
-Future<Media> _convertToMedia({required AssetEntity media}) async {
-  var mediaType = MediaType.all;
-  if (media.type == AssetType.video) mediaType = MediaType.video;
-  if (media.type == AssetType.image) mediaType = MediaType.image;
-
-  return Media(
-    file: await media.file,
-    // mediaByte: await media.originBytes,
-    thumbnail: await media.thumbnailDataWithSize(ThumbnailSize(200, 200)),
-    id: media.id,
-    size: media.size,
-    title: media.title,
-    creationTime: media.createDateTime,
-    mediaType: mediaType,
-  );
 }

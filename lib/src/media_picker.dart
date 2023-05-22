@@ -15,10 +15,10 @@ class MediaPicker extends StatefulWidget {
   });
 
   ///CallBack on image pick is done
-  final ValueChanged<List<Media>> onPicked;
+  final ValueChanged<List<MediaViewModel>> onPicked;
 
   ///Previously selected list of media in your app
-  final List<Media> mediaList;
+  final List<MediaViewModel> mediaList;
 
   ///Callback on cancel the picking action
   final VoidCallback onCancel;
@@ -36,7 +36,7 @@ class MediaPicker extends StatefulWidget {
   final ScrollController? scrollController;
 
   ///CallBack on image picking
-  final ValueChanged<List<Media>>? onPicking;
+  final ValueChanged<List<MediaViewModel>>? onPicking;
 
   @override
   _MediaPickerState createState() => _MediaPickerState();
@@ -49,7 +49,7 @@ class _MediaPickerState extends State<MediaPicker> {
   final _headerController = GlobalKey<HeaderState>();
 
   AssetPathEntity? _selectedAlbum;
-  late List<Media> _selectedMedias = [...widget.mediaList];
+  late List<MediaViewModel> _selectedMedias = [...widget.mediaList];
 
   Future<List<AssetPathEntity>> _fetchAlbums() async {
     var type = RequestType.common;
@@ -72,7 +72,7 @@ class _MediaPickerState extends State<MediaPicker> {
     }
   }
 
-  void _onMediaTilePressed(Media media, List<Media> selectedMedias) {
+  void _onMediaTilePressed(MediaViewModel media, List<MediaViewModel> selectedMedias) {
     _headerController.currentState?.updateSelection(selectedMedias);
 
     setState(() {

@@ -18,6 +18,8 @@ part 'src/enums.dart';
 
 part 'src/media.dart';
 
+part 'src/media_view_model.dart';
+
 part 'src/media_picker.dart';
 
 part 'src/picker_decoration.dart';

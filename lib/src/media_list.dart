@@ -15,18 +15,18 @@ class MediaList extends StatefulWidget {
   });
 
   final AssetPathEntity album;
-  final List<Media> previousList;
+  final List<MediaViewModel> previousList;
   final MediaCount? mediaCount;
   final PickerDecoration decoration;
   final ScrollController? scrollController;
-  final Function(Media media, List<Media> selectedMedias) onMediaTilePressed;
+  final Function(MediaViewModel media, List<MediaViewModel> selectedMedias) onMediaTilePressed;
 
   @override
   _MediaListState createState() => _MediaListState();
 }
 
 class _MediaListState extends State<MediaList> {
-  final List<Widget> _mediaList = [];
+  final List<MediaViewModel> _mediaList = [];
   var _currentPage = 0;
   late var _lastPage = _currentPage;
   late AssetPathEntity _album = widget.album;
@@ -63,7 +63,16 @@ class _MediaListState extends State<MediaList> {
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: widget.decoration.columnCount,
         ),
-        itemBuilder: (_, index) => _mediaList[index],
+        itemBuilder: (_, index) => MediaTile(
+          media: _mediaList[index],
+          onThumbnailLoad: (thumb) {
+            _mediaList[index].thumbnail = thumb;
+            setState(() {});
+          },
+          onSelected: _onMediaTileSelected,
+          isSelected: _isPreviouslySelected(_mediaList[index]),
+          decoration: widget.decoration,
+        ),
       ),
     );
   }
@@ -89,26 +98,27 @@ class _MediaListState extends State<MediaList> {
     final result = await PhotoManager.requestPermissionExtend();
     if (result == PermissionState.authorized ||
         result == PermissionState.limited) {
-      final media = await _album.getAssetListPaged(
+      final newAssets = await _album.getAssetListPaged(
         page: _currentPage,
         size: 60,
       );
-      if (media.isEmpty) {
+      if (newAssets.isEmpty) {
         return;
       }
-      List<Widget> temp = [];
+      List<MediaViewModel> newMedias = [];
 
-      for (var asset in media) {
-        temp.add(MediaTile(
-          media: asset,
-          onSelected: _onMediaTileSelected,
-          isSelected: _isPreviouslySelected(asset),
-          decoration: widget.decoration,
-        ));
+      // var tasks = <Future>[];
+      for (var asset in newAssets) {
+        // Future<dynamic> task = Future(() async {
+        // });
+        // tasks.add(task);
+        var media = _toMediaViewModel(asset);
+        newMedias.add(media);
       }
+      // await Future.wait(tasks);
 
       setState(() {
-        _mediaList.addAll(temp);
+        _mediaList.addAll(newMedias);
         _currentPage++;
       });
     } else {
@@ -116,11 +126,11 @@ class _MediaListState extends State<MediaList> {
     }
   }
 
-  bool _isPreviouslySelected(AssetEntity media) {
+  bool _isPreviouslySelected(MediaViewModel media) {
     return _selectedMedias.any((element) => element.id == media.id);
   }
 
-  void _onMediaTileSelected(bool isSelected, Media media) {
+  void _onMediaTileSelected(bool isSelected, MediaViewModel media) {
     if (isSelected) {
       setState(() => _selectedMedias.add(media));
     } else {
@@ -128,5 +138,16 @@ class _MediaListState extends State<MediaList> {
           () => _selectedMedias.removeWhere((_media) => _media.id == media.id));
     }
     widget.onMediaTilePressed(media, _selectedMedias);
+  }
+
+  static MediaViewModel _toMediaViewModel(AssetEntity entity) {
+    var mediaType = MediaType.all;
+    if (entity.type == AssetType.video) mediaType = MediaType.video;
+    if (entity.type == AssetType.image) mediaType = MediaType.image;
+    return MediaViewModel(
+      id: entity.id,
+      thumbnailAsync: entity.thumbnailDataWithSize(ThumbnailSize(200, 200)),
+      type: mediaType,
+    );
   }
 }

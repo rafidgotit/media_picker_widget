@@ -1,6 +1,5 @@
-import 'dart:typed_data';
+part of media_picker_widget;
 
-import 'package:media_picker_widget/media_picker_widget.dart';
 
 ///This class will contain the necessary data for viewing list of media
 class MediaViewModel{
@@ -9,14 +8,18 @@ class MediaViewModel{
   final String? id;
 
   ///A low resolution image to show as preview
-  final Uint8List? thumbnail;
+  Uint8List? thumbnail;
+
+  ///Get Thumbnail of the media file
+  final Future<Uint8List?>? thumbnailAsync;
 
   ///Type of the media, Image/Video
-  final MediaType? mediaType;
+  final MediaType? type;
 
   MediaViewModel({
     this.id,
     this.thumbnail,
-    this.mediaType,
+    this.thumbnailAsync,
+    this.type,
   });
 }
