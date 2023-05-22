@@ -5,197 +5,202 @@ import 'package:photo_manager/photo_manager.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import '../media_picker_widget.dart';
-import 'header_controller.dart';
 import 'widgets/jumping_button.dart';
 
 class Header extends StatefulWidget {
   Header({
+    Key? key,
     required this.selectedAlbum,
     required this.onBack,
     required this.onDone,
     required this.albumController,
-    required this.controller,
     this.mediaCount,
-    this.decoration,
-  });
+    required this.decoration,
+    this.selectedMedias,
+  }) : super(key: key);
 
   final AssetPathEntity selectedAlbum;
   final VoidCallback onBack;
   final PanelController albumController;
   final ValueChanged<List<Media>> onDone;
-  final HeaderController controller;
   final MediaCount? mediaCount;
-  final PickerDecoration? decoration;
+  final PickerDecoration decoration;
+  final List<Media>? selectedMedias;
 
   @override
-  _HeaderState createState() => _HeaderState();
+  HeaderState createState() => HeaderState();
 }
 
-class _HeaderState extends State<Header> with TickerProviderStateMixin {
-  List<Media> selectedMedia = [];
+class HeaderState extends State<Header> with TickerProviderStateMixin {
+  static const _arrowDown = 0.0;
+  static const _arrowUp = 1.0;
 
-  var _arrowAnimation;
-  AnimationController? _arrowAnimController;
+  late List<Media> _selectedMedia = [...?widget.selectedMedias];
 
-  @override
-  void initState() {
-    _arrowAnimController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 100));
-    _arrowAnimation =
-        Tween<double>(begin: 0, end: 1).animate(_arrowAnimController!);
+  late final _arrowAnimController = AnimationController(
+    vsync: this,
+    duration: Duration(milliseconds: 100),
+  );
 
-    widget.controller.updateSelection = (selectedMediaList) {
-      if (widget.mediaCount == MediaCount.multiple)
-        setState(() => selectedMedia = selectedMediaList.cast<Media>());
-      else if (selectedMediaList.length == 1) widget.onDone(selectedMediaList);
-    };
+  late final _arrowAnimation = Tween<double>(
+    begin: _arrowDown,
+    end: _arrowUp,
+  ).animate(_arrowAnimController);
 
-    widget.controller.closeAlbumDrawer = () {
+  void updateSelection(List<Media> selectedMediaList) {
+    if (widget.mediaCount == MediaCount.multiple) {
+      setState(() {
+        _selectedMedia = selectedMediaList;
+      });
+    } else if (selectedMediaList.length == 1) {
+      widget.onDone(selectedMediaList);
+    }
+  }
+
+  void closeAlbumDrawer() {
+    widget.albumController.close();
+    _arrowAnimController.reverse();
+  }
+
+  void _onLabelPressed() {
+    if (widget.albumController.isPanelOpen) {
       widget.albumController.close();
-      _arrowAnimController!.reverse();
-    };
-
-    super.initState();
+      _arrowAnimController.reverse();
+    }
+    if (widget.albumController.isPanelClosed) {
+      widget.albumController.open();
+      _arrowAnimController.forward();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+    return SizedBox(
+      height: 46.0,
+      child: Stack(
+        alignment: Alignment.center,
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6),
+          Positioned(
+            left: 6.0,
             child: IconButton(
-                icon: widget.decoration!.cancelIcon ??
-                    Icon(Icons.arrow_back_outlined),
-                onPressed: () {
-                  if (_arrowAnimation.value == 1)
-                    _arrowAnimController!.reverse();
-                  widget.onBack();
-                }),
-          ),
-          Expanded(
-            flex: 3,
-            child: Center(
-              child: JumpingButton(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    AnimatedSwitcher(
-                      duration: Duration(milliseconds: 200),
-                      transitionBuilder:
-                          (Widget child, Animation<double> animation) {
-                        return SlideTransition(
-                          child: child,
-                          position: Tween<Offset>(
-                                  begin: Offset(0.0, -0.5),
-                                  end: Offset(0.0, 0.0))
-                              .animate(animation),
-                        );
-                      },
-                      child: Text(
-                        widget.selectedAlbum.name,
-                        style: widget.decoration!.albumTitleStyle,
-                        key: ValueKey<String>(widget.selectedAlbum.id),
-                      ),
-                    ),
-                    AnimatedBuilder(
-                      animation: _arrowAnimation,
-                      builder: (context, child) => Transform.rotate(
-                        angle: _arrowAnimation.value * pi,
-                        child: Icon(
-                          Icons.keyboard_arrow_up_outlined,
-                          size: (widget
-                                      .decoration!.albumTitleStyle?.fontSize) !=
-                                  null
-                              ? widget.decoration!.albumTitleStyle!.fontSize! *
-                                  1.5
-                              : 20,
-                          color: widget.decoration!.albumTitleStyle?.color ??
-                              Theme.of(context).primaryColor,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                onTap: () {
-                  if (widget.albumController.isPanelOpen) {
-                    widget.albumController.close();
-                    _arrowAnimController!.reverse();
-                  }
-                  if (widget.albumController.isPanelClosed) {
-                    widget.albumController.open();
-                    _arrowAnimController!.forward();
-                  }
-                },
-              ),
+              icon: widget.decoration.cancelIcon ??
+                  Icon(Icons.arrow_back_outlined),
+              onPressed: () {
+                if (_arrowAnimation.value == _arrowUp) {
+                  _arrowAnimController.reverse();
+                }
+                widget.onBack();
+              },
             ),
           ),
-          if (widget.mediaCount == MediaCount.multiple)
-            Expanded(
-              flex: 1,
+          JumpingButton(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                AnimatedSwitcher(
+                  duration: Duration(milliseconds: 200),
+                  transitionBuilder: (
+                    Widget child,
+                    Animation<double> animation,
+                  ) {
+                    return SlideTransition(
+                      child: child,
+                      position: Tween<Offset>(
+                        begin: Offset(0.0, -0.5),
+                        end: Offset(0.0, 0.0),
+                      ).animate(animation),
+                    );
+                  },
+                  child: Text(
+                    widget.selectedAlbum.name,
+                    style: widget.decoration.albumTitleStyle,
+                    key: ValueKey<String>(widget.selectedAlbum.id),
+                  ),
+                ),
+                AnimatedBuilder(
+                  animation: _arrowAnimation,
+                  builder: (context, child) => Transform.rotate(
+                    angle: _arrowAnimation.value * pi,
+                    child: Icon(
+                      Icons.keyboard_arrow_up_outlined,
+                      size: (widget.decoration.albumTitleStyle?.fontSize) !=
+                              null
+                          ? widget.decoration.albumTitleStyle!.fontSize! * 1.5
+                          : 20,
+                      color: widget.decoration.albumTitleStyle?.color ??
+                          Theme.of(context).primaryColor,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            onTap: _onLabelPressed,
+          ),
+          Visibility(
+            visible: widget.mediaCount == MediaCount.multiple &&
+                _selectedMedia.isNotEmpty,
+            child: Positioned(
+              right: 6.0,
               child: AnimatedSwitcher(
                 duration: Duration(milliseconds: 100),
-                transitionBuilder: (Widget child, Animation<double> animation) {
+                transitionBuilder: (
+                  Widget child,
+                  Animation<double> animation,
+                ) {
                   return SlideTransition(
                     child: child,
                     position: Tween<Offset>(
-                            begin: Offset(1, 0.0), end: Offset(0.0, 0.0))
-                        .animate(animation),
+                      begin: Offset(1, 0.0),
+                      end: Offset(0.0, 0.0),
+                    ).animate(animation),
                   );
                 },
-                child: (selectedMedia.length > 0)
-                    ? TextButton(
-                        key: Key('button'),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              widget.decoration!.completeText,
-                              style: widget.decoration!.completeTextStyle ??
-                                  TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500),
+                child: TextButton(
+                  key: Key('button'),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        widget.decoration.completeText,
+                        style: widget.decoration.completeTextStyle ??
+                            TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
                             ),
-                            Text(
-                              ' (${selectedMedia.length})',
-                              style: TextStyle(
-                                color: widget
-                                        .decoration!.completeTextStyle?.color ??
-                                    Colors.white,
-                                fontSize: widget.decoration!.completeTextStyle
-                                            ?.fontSize !=
-                                        null
-                                    ? widget.decoration!.completeTextStyle!
-                                            .fontSize! *
-                                        0.77
-                                    : 11,
-                                fontWeight: FontWeight.w300,
-                              ),
-                            ),
-                          ],
-                        ),
-                        onPressed: selectedMedia.length > 0
-                            ? () => widget.onDone(selectedMedia)
-                            : null,
-                        style: widget.decoration!.completeButtonStyle ??
-                            ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all(
-                                  Theme.of(context).primaryColor),
-                              shape: MaterialStateProperty.all(
-                                  RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(3))),
-                            ),
-                      )
-                    : Container(
-                        key: Key('blank'),
                       ),
+                      Text(
+                        ' (${_selectedMedia.length})',
+                        style: TextStyle(
+                          color: widget.decoration.completeTextStyle?.color ??
+                              Colors.white,
+                          fontSize: widget
+                                      .decoration.completeTextStyle?.fontSize !=
+                                  null
+                              ? widget.decoration.completeTextStyle!.fontSize! *
+                                  0.77
+                              : 11,
+                          fontWeight: FontWeight.w300,
+                        ),
+                      ),
+                    ],
+                  ),
+                  onPressed: _selectedMedia.length > 0
+                      ? () => widget.onDone(_selectedMedia)
+                      : null,
+                  style: widget.decoration.completeButtonStyle ??
+                      TextButton.styleFrom(
+                        backgroundColor: Theme.of(context).primaryColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(3),
+                        ),
+                      ),
+                ),
               ),
             ),
+          ),
         ],
       ),
     );

@@ -10,7 +10,6 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import 'src/album_selector.dart';
 import 'src/header.dart';
-import 'src/header_controller.dart';
 import 'src/media_list.dart';
 import 'src/widgets/loading_widget.dart';
 import 'src/widgets/no_media.dart';

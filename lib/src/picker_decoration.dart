@@ -3,37 +3,40 @@ part of media_picker_widget;
 ///[PickerDecoration] is used for decorating the UI
 class PickerDecoration {
   ///Widget that will work as back button in picker
-  Widget? cancelIcon;
+  final Widget? cancelIcon;
 
   ///Blur amount on select media
-  double blurStrength;
+  final double blurStrength;
 
   ///assign number of Columns of Media Grid
-  int columnCount;
+  final int columnCount;
 
   ///set position of ActionBar, bottom or top
-  ActionBarPosition actionBarPosition;
+  final ActionBarPosition actionBarPosition;
 
   ///Album title text style
-  TextStyle? albumTitleStyle;
+  final TextStyle? albumTitleStyle;
 
   ///Album text text style
-  TextStyle? albumTextStyle;
+  final TextStyle? albumTextStyle;
 
   ///Album's media count text style
-  TextStyle? albumCountTextStyle;
+  final TextStyle? albumCountTextStyle;
 
   ///text of select button
-  String completeText;
+  final String completeText;
+
+  ///text of no media
+  final String? noMedia;
 
   ///text style of select button
-  TextStyle? completeTextStyle;
+  final TextStyle? completeTextStyle;
 
   ///style of select button
-  ButtonStyle? completeButtonStyle;
+  final ButtonStyle? completeButtonStyle;
 
   ///loading widget to be used as media place holder until media loads
-  Widget? loadingWidget;
+  final Widget? loadingWidget;
 
   ///PickerDecoration constructor to be used for decorating the UI
   PickerDecoration({
@@ -48,5 +51,6 @@ class PickerDecoration {
     this.loadingWidget,
     this.albumTextStyle,
     this.albumCountTextStyle,
+    this.noMedia,
   });
 }

@@ -60,18 +60,24 @@ class _JumpingButtonState extends State<JumpingButton>
     _scale = 1 - _controller.value;
     if (widget.clipRadius != null) radius = _controller.value * 300;
 
-    Widget child = widget.child;
-    if (widget.bound)
-      child =
-          ClipRRect(borderRadius: BorderRadius.circular(radius), child: child);
+    var child = widget.child;
+    if (widget.bound) {
+      child = ClipRRect(
+        borderRadius: BorderRadius.circular(radius),
+        child: child,
+      );
+    }
 
     return Listener(
       onPointerDown: (_) {
         if (enabled) {
-          if (widget.dismissKeyboard)
+          if (widget.dismissKeyboard) {
             FocusManager.instance.primaryFocus?.unfocus();
+          }
           _controller.forward();
-          if (widget.haptic) HapticFeedback.lightImpact();
+          if (widget.haptic) {
+            HapticFeedback.lightImpact();
+          }
         }
       },
       onPointerUp: (_) {

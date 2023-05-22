@@ -3,28 +3,28 @@ part of media_picker_widget;
 ///This class will contain the necessary data of selected media
 class Media {
   ///File saved on local storage
-  File? file;
+  final File? file;
 
   ///Unique id to identify
-  String? id;
+  final String? id;
 
   ///A low resolution image to show as preview
-  Uint8List? thumbnail;
+  final Uint8List? thumbnail;
 
   ///The image file in bytes format
-  Uint8List? mediaByte;
+  final Uint8List? mediaByte;
 
   ///Image Dimensions
-  Size? size;
+  final Size? size;
 
   ///Creation time of the media file on local storage
-  DateTime? creationTime;
+  final DateTime? creationTime;
 
   ///media name or title
-  String? title;
+  final String? title;
 
   ///Type of the media, Image/Video
-  MediaType? mediaType;
+  final MediaType? mediaType;
 
   Media({
     this.id,
