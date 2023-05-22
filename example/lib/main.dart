@@ -28,7 +28,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<MediaViewModel> mediaList = [];
+  List<Media> mediaList = [];
 
   @override
   void initState() {

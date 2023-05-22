@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 import '../../media_picker_widget.dart';
+import '../media_view_model.dart';
 import 'loading_widget.dart';
 
 class MediaTile extends StatelessWidget {

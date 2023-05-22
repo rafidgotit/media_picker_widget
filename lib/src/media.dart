@@ -6,7 +6,7 @@ class Media {
   final File? file;
 
   ///Unique id to identify
-  final String? id;
+  final String id;
 
   ///A low resolution image to show as preview
   final Uint8List? thumbnail;
@@ -32,22 +32,17 @@ class Media {
   ///longitude of the media file
   final double? longitude;
 
-  ///Android: `MediaStore.MediaColumns.DISPLAY_NAME`.
-  /// iOS/macOS: `PHAssetResource.originalFilename`
-  final Future<String?>? titleAsync;
-  
-  ///Android: `MediaStore.MediaColumns.DISPLAY_NAME`.
-  /// iOS/macOS: `PHAssetResource.originalFilename`
-  final Future<String?>? titleAsyncWithSubType;
-
   ///Type of the media, Image/Video
   final MediaType? mediaType;
 
   ///Duration of the video
   final Duration? videoDuration;
 
+  ///Index of selected image
+  final int? index;
+
   Media({
-    this.id,
+    required this.id,
     this.file,
     this.thumbnail,
     this.mediaByte,
@@ -56,10 +51,9 @@ class Media {
     this.title,
     this.mediaType,
     this.videoDuration,
-    this.titleAsync,
-    this.titleAsyncWithSubType,
     this.modifiedTime,
     this.latitude,
     this.longitude,
+    this.index,
   });
 }

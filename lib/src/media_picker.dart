@@ -15,10 +15,10 @@ class MediaPicker extends StatefulWidget {
   });
 
   ///CallBack on image pick is done
-  final ValueChanged<List<MediaViewModel>> onPicked;
+  final ValueChanged<List<Media>> onPicked;
 
   ///Previously selected list of media in your app
-  final List<MediaViewModel> mediaList;
+  final List<Media> mediaList;
 
   ///Callback on cancel the picking action
   final VoidCallback onCancel;
@@ -36,7 +36,7 @@ class MediaPicker extends StatefulWidget {
   final ScrollController? scrollController;
 
   ///CallBack on image picking
-  final ValueChanged<List<MediaViewModel>>? onPicking;
+  final ValueChanged<List<Media>>? onPicking;
 
   @override
   _MediaPickerState createState() => _MediaPickerState();
@@ -49,7 +49,7 @@ class _MediaPickerState extends State<MediaPicker> {
   final _headerController = GlobalKey<HeaderState>();
 
   AssetPathEntity? _selectedAlbum;
-  late List<MediaViewModel> _selectedMedias = [...widget.mediaList];
+  late List<MediaViewModel> _selectedMedias = [...MediaConversionService.toMediaViewList(widget.mediaList)];
 
   Future<List<AssetPathEntity>> _fetchAlbums() async {
     var type = RequestType.common;
@@ -72,14 +72,15 @@ class _MediaPickerState extends State<MediaPicker> {
     }
   }
 
-  void _onMediaTilePressed(MediaViewModel media, List<MediaViewModel> selectedMedias) {
+  Future _onMediaTilePressed(MediaViewModel media, List<MediaViewModel> selectedMedias) async {
     _headerController.currentState?.updateSelection(selectedMedias);
 
     setState(() {
       _selectedMedias = selectedMedias;
     });
 
-    widget.onPicking?.call(selectedMedias);
+    var results = await MediaConversionService.toMediaList(selectedMedias);
+    widget.onPicking?.call(results);
   }
 
   @override
@@ -121,7 +122,10 @@ class _MediaPickerState extends State<MediaPicker> {
         Widget header = Header(
           key: _headerController,
           onBack: handleBackPress,
-          onDone: widget.onPicked,
+          onDone: (data) async {
+            var result = await MediaConversionService.toMediaList(data);
+            widget.onPicked(result);
+          },
           albumController: _albumController,
           selectedAlbum: _selectedAlbum ?? defaultSelectedAlbum,
           mediaCount: widget.mediaCount,

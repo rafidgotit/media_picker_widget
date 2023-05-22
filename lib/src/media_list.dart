@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 import '../media_picker_widget.dart';
+import 'media_view_model.dart';
 import 'widgets/media_tile.dart';
 
 class MediaList extends StatefulWidget {
@@ -148,6 +149,7 @@ class _MediaListState extends State<MediaList> {
       id: entity.id,
       thumbnailAsync: entity.thumbnailDataWithSize(ThumbnailSize(200, 200)),
       type: mediaType,
+      thumbnail: null,
     );
   }
 }

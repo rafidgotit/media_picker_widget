@@ -5,6 +5,7 @@ import 'package:photo_manager/photo_manager.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import '../media_picker_widget.dart';
+import 'media_view_model.dart';
 import 'widgets/jumping_button.dart';
 
 class Header extends StatefulWidget {
