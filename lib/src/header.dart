@@ -205,4 +205,8 @@ class HeaderState extends State<Header> with TickerProviderStateMixin {
       ),
     );
   }
+
+  List<Media> getFinalList(List<Media> selectedMediaList) {
+    return [];
+  }
 }

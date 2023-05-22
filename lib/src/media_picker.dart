@@ -118,19 +118,20 @@ class _MediaPickerState extends State<MediaPicker> {
       } else {
         final defaultSelectedAlbum = albums.first;
 
+        Widget header = Header(
+          key: _headerController,
+          onBack: handleBackPress,
+          onDone: widget.onPicked,
+          albumController: _albumController,
+          selectedAlbum: _selectedAlbum ?? defaultSelectedAlbum,
+          mediaCount: widget.mediaCount,
+          decoration: _decoration,
+          selectedMedias: _selectedMedias,
+        );
+
         return Column(
           children: [
-            if (_decoration.actionBarPosition == ActionBarPosition.top)
-              Header(
-                key: _headerController,
-                onBack: handleBackPress,
-                onDone: widget.onPicked,
-                albumController: _albumController,
-                selectedAlbum: _selectedAlbum ?? defaultSelectedAlbum,
-                mediaCount: widget.mediaCount,
-                decoration: _decoration,
-                selectedMedias: _selectedMedias,
-              ),
+            if (_decoration.actionBarPosition == ActionBarPosition.top) header,
             Expanded(
               child: Stack(
                 children: [
@@ -153,17 +154,7 @@ class _MediaPickerState extends State<MediaPicker> {
                 ],
               ),
             ),
-            if (_decoration.actionBarPosition == ActionBarPosition.bottom)
-              Header(
-                key: _headerController,
-                onBack: handleBackPress,
-                onDone: widget.onPicked,
-                albumController: _albumController,
-                selectedAlbum: _selectedAlbum ?? defaultSelectedAlbum,
-                mediaCount: widget.mediaCount,
-                decoration: _decoration,
-                selectedMedias: _selectedMedias,
-              ),
+            if (_decoration.actionBarPosition == ActionBarPosition.bottom) header,
           ],
         );
       }

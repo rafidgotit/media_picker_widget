@@ -6,7 +6,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key key}) : super(key: key);
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key key}) : super(key: key);
+  const MyHomePage({Key? key}) : super(key: key);
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -62,8 +62,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: SizedBox(
                     height: 80,
                     width: 80,
-                    child: Image.memory(
-                      mediaList[index].thumbnail,
+                    child: mediaList[index].thumbnail==null ? const SizedBox() : Image.memory(
+                      mediaList[index].thumbnail!,
                       fit: BoxFit.cover,
                     ),
                   ),

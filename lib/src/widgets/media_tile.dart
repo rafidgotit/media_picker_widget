@@ -177,7 +177,7 @@ Future<Media> _convertToMedia({required AssetEntity media}) async {
 
   return Media(
     file: await media.file,
-    mediaByte: await media.originBytes,
+    // mediaByte: await media.originBytes,
     thumbnail: await media.thumbnailDataWithSize(ThumbnailSize(200, 200)),
     id: media.id,
     size: media.size,
