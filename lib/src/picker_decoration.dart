@@ -38,6 +38,9 @@ class PickerDecoration {
   ///loading widget to be used as media place holder until media loads
   final Widget? loadingWidget;
 
+  ///If the file is video, a duration will be shown on media list. You can customize it using this builder
+  final Function(BuildContext context, String? duration)? videoDurationBuilder;
+
   ///PickerDecoration constructor to be used for decorating the UI
   PickerDecoration({
     this.actionBarPosition = ActionBarPosition.top,
@@ -52,5 +55,6 @@ class PickerDecoration {
     this.albumTextStyle,
     this.albumCountTextStyle,
     this.noMedia,
+    this.videoDurationBuilder,
   });
 }

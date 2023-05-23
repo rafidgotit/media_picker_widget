@@ -19,10 +19,14 @@ class MediaViewModel{
   ///Type of the media, Image/Video
   final MediaType? type;
 
+  ///Duration of the video
+  final Duration? videoDuration;
+
   MediaViewModel({
     required this.id,
     this.thumbnail,
     this.thumbnailAsync,
     this.type,
+    this.videoDuration,
   });
 }

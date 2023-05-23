@@ -18,6 +18,7 @@ class Header extends StatefulWidget {
     this.mediaCount,
     required this.decoration,
     this.selectedMedias,
+    this.headerBuilder,
   }) : super(key: key);
 
   final AssetPathEntity selectedAlbum;
@@ -27,6 +28,7 @@ class Header extends StatefulWidget {
   final MediaCount? mediaCount;
   final PickerDecoration decoration;
   final List<MediaViewModel>? selectedMedias;
+  final HeaderBuilder? headerBuilder;
 
   @override
   HeaderState createState() => HeaderState();
@@ -76,6 +78,66 @@ class HeaderState extends State<Header> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    Widget albumPicker = JumpingButton(
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          AnimatedSwitcher(
+            duration: Duration(milliseconds: 200),
+            transitionBuilder: (
+                Widget child,
+                Animation<double> animation,
+                ) {
+              return SlideTransition(
+                child: child,
+                position: Tween<Offset>(
+                  begin: Offset(0.0, -0.5),
+                  end: Offset(0.0, 0.0),
+                ).animate(animation),
+              );
+            },
+            child: Text(
+              widget.selectedAlbum.name,
+              style: widget.decoration.albumTitleStyle,
+              key: ValueKey<String>(widget.selectedAlbum.id),
+            ),
+          ),
+          AnimatedBuilder(
+            animation: _arrowAnimation,
+            builder: (context, child) => Transform.rotate(
+              angle: _arrowAnimation.value * pi,
+              child: Icon(
+                Icons.keyboard_arrow_up_outlined,
+                size: (widget.decoration.albumTitleStyle?.fontSize) !=
+                    null
+                    ? widget.decoration.albumTitleStyle!.fontSize! * 1.5
+                    : 20,
+                color: widget.decoration.albumTitleStyle?.color ??
+                    Theme.of(context).primaryColor,
+              ),
+            ),
+          ),
+        ],
+      ),
+      onTap: _onLabelPressed,
+    );
+
+    VoidCallback onSelectionDone = () {
+      widget.onDone(_selectedMedia);
+    };
+
+    VoidCallback onBack = () {
+      if (_arrowAnimation.value == _arrowUp) {
+        _arrowAnimController.reverse();
+      }
+      widget.onBack();
+    };
+
+    if(widget.headerBuilder != null) {
+      return widget.headerBuilder!(context, albumPicker, onSelectionDone, onBack);
+    }
+
     return SizedBox(
       height: 46.0,
       child: Stack(
@@ -86,57 +148,14 @@ class HeaderState extends State<Header> with TickerProviderStateMixin {
             child: IconButton(
               icon: widget.decoration.cancelIcon ??
                   Icon(Icons.arrow_back_outlined),
-              onPressed: () {
-                if (_arrowAnimation.value == _arrowUp) {
-                  _arrowAnimController.reverse();
-                }
-                widget.onBack();
-              },
+              onPressed: onBack,
             ),
           ),
-          JumpingButton(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                AnimatedSwitcher(
-                  duration: Duration(milliseconds: 200),
-                  transitionBuilder: (
-                    Widget child,
-                    Animation<double> animation,
-                  ) {
-                    return SlideTransition(
-                      child: child,
-                      position: Tween<Offset>(
-                        begin: Offset(0.0, -0.5),
-                        end: Offset(0.0, 0.0),
-                      ).animate(animation),
-                    );
-                  },
-                  child: Text(
-                    widget.selectedAlbum.name,
-                    style: widget.decoration.albumTitleStyle,
-                    key: ValueKey<String>(widget.selectedAlbum.id),
-                  ),
-                ),
-                AnimatedBuilder(
-                  animation: _arrowAnimation,
-                  builder: (context, child) => Transform.rotate(
-                    angle: _arrowAnimation.value * pi,
-                    child: Icon(
-                      Icons.keyboard_arrow_up_outlined,
-                      size: (widget.decoration.albumTitleStyle?.fontSize) !=
-                              null
-                          ? widget.decoration.albumTitleStyle!.fontSize! * 1.5
-                          : 20,
-                      color: widget.decoration.albumTitleStyle?.color ??
-                          Theme.of(context).primaryColor,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            onTap: _onLabelPressed,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              albumPicker,
+            ],
           ),
           Visibility(
             visible: widget.mediaCount == MediaCount.multiple &&
@@ -188,9 +207,7 @@ class HeaderState extends State<Header> with TickerProviderStateMixin {
                       ),
                     ],
                   ),
-                  onPressed: _selectedMedia.length > 0
-                      ? () => widget.onDone(_selectedMedia)
-                      : null,
+                  onPressed: onSelectionDone,
                   style: widget.decoration.completeButtonStyle ??
                       TextButton.styleFrom(
                         backgroundColor: Theme.of(context).primaryColor,

@@ -150,6 +150,7 @@ class _MediaListState extends State<MediaList> {
       thumbnailAsync: entity.thumbnailDataWithSize(ThumbnailSize(200, 200)),
       type: mediaType,
       thumbnail: null,
+      videoDuration: entity.type == AssetType.video ? entity.videoDuration : null,
     );
   }
 }

@@ -1,5 +1,12 @@
 part of media_picker_widget;
 
+///[HeaderBuilder] is used to build custom header for picker
+///[context] is the BuildContext of picker header
+///[albumSelector] is the widget that will show the album selector, you can use it to show album selector in your custom header. Use [PickerDecoration] to customize it.
+///[completeSelection] is called when selection is done. If you want a button for user to confirm selection, you can use it. It will trigger [MediaPicker.onPicked] callback. Note: If MediaPicker's media count is [MediaCount.single], It won't ask for confirmation.
+///[onBack] is the callback when user press back button. It will close album selector if it is open. Else your [MediaPicker.onCancel] callback will be called.
+typedef HeaderBuilder = Function(BuildContext context, Widget albumSelector, VoidCallback completeSelection, VoidCallback onBack);
+
 ///The MediaPicker widget that will select media files form storage
 class MediaPicker extends StatefulWidget {
   ///The MediaPicker constructor that will select media files form storage
@@ -12,6 +19,7 @@ class MediaPicker extends StatefulWidget {
     this.decoration,
     this.scrollController,
     this.onPicking,
+    this.headerBuilder,
   });
 
   ///CallBack on image pick is done
@@ -21,7 +29,7 @@ class MediaPicker extends StatefulWidget {
   final List<Media> mediaList;
 
   ///Callback on cancel the picking action
-  final VoidCallback onCancel;
+  final VoidCallback? onCancel;
 
   ///make picker to select multiple or single media file
   final MediaCount mediaCount;
@@ -37,6 +45,9 @@ class MediaPicker extends StatefulWidget {
 
   ///CallBack on image picking
   final ValueChanged<List<Media>>? onPicking;
+
+  ///Custom Header Builder
+  final HeaderBuilder? headerBuilder;
 
   @override
   _MediaPickerState createState() => _MediaPickerState();
@@ -98,7 +109,7 @@ class _MediaPickerState extends State<MediaPicker> {
     if (_albumController.isPanelOpen) {
       _albumController.close();
     } else {
-      widget.onCancel();
+      widget.onCancel?.call();
     }
   }
 
@@ -131,6 +142,7 @@ class _MediaPickerState extends State<MediaPicker> {
           mediaCount: widget.mediaCount,
           decoration: _decoration,
           selectedMedias: _selectedMedias,
+          headerBuilder: widget.headerBuilder,
         );
 
         return Column(

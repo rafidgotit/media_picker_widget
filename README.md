@@ -13,7 +13,7 @@
 ## Install
 Add to `pubspec.yaml`.
 
-The latest version is   [![Build](https://img.shields.io/badge/pub-v0.0.9-%23009F00)](https://pub.dev/packages/media_picker_widget)
+The latest version is   [![Build](https://img.shields.io/badge/pub-v1.0.1-%23009F00)](https://pub.dev/packages/media_picker_widget)
 
 ```
 media_picker_widget: $latest_version
@@ -54,10 +54,38 @@ MediaPicker(
 )
 ```
 
-For more Information about the Classes, Enums, Funtions etc, visit API Reference.
+### Custom Header
+New header customization have been added. `MediaPicker` widget has `HeaderBuilder` property. You can pass a `HeaderBuilder` to customize the header. `HeaderBuilder` is a function that returns a `Widget`. You can use `HeaderBuilder` to customize the header as you wish. You can use `MediaPickerHeader` class to get the default header. `MediaPickerHeader` class has a `MediaPickerHeaderProps` class that takes `MediaPicker` properties as parameters. You can use `MediaPickerHeaderProps` class to customize the header. 
+Like this,
+```
+MediaPicker(
+  mediaList: mediaList, //let MediaPicker know which medias are already selected by passing the previous mediaList
+  onPick: (selectedList){
+    print('Got Media ${selectedList.length}');
+  },
+  onCancel: ()=> print('Canceled'),
+  mediaCount: MediaCount.single,
+  mediaType: MediaType.image,
+  decoration: PickerDecoration(),
+  headerBuilder: (context, albumPicker, onDone, onCancel) {
+   return SizedBox(
+      height: 46.0,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          TextButton(onPressed: onDone, child: const Text('Back')),
+          Expanded(child: Center(child: albumPicker)),
+          TextButton(onPressed: onDone, child: const Text('Done')),
+        ],
+      ),
+    );
+  },
+)
+```
 
-### Note
-This package has not been tested in IOS yet. If you find any issue, let me know by opening an Issue on **[Github](https://github.com/rafid08/media_picker_widget/issues)**
+
+For more Information about the Classes, Enums, Functions etc, visit API Reference.
+
 
 ## Dependencies
 This package depends on the following packages :

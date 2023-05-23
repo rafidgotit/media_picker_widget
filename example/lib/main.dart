@@ -57,17 +57,17 @@ class _MyHomePageState extends State<MyHomePage> {
         shrinkWrap: true,
         children: List.generate(
             mediaList.length,
-            (index) => Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: SizedBox(
-                    height: 80,
-                    width: 80,
-                    child: mediaList[index].thumbnail==null ? const SizedBox() : Image.memory(
-                      mediaList[index].thumbnail!,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                )),
+                (index) => Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox(
+                height: 80,
+                width: 80,
+                child: mediaList[index].thumbnail==null ? const SizedBox() : Image.memory(
+                  mediaList[index].thumbnail!,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            )),
       ),
     );
   }
@@ -84,11 +84,9 @@ class _MyHomePageState extends State<MyHomePage> {
           },
           onCancel: () => Navigator.pop(context),
           mediaCount: MediaCount.multiple,
-          mediaType: MediaType.image,
+          mediaType: MediaType.all,
           decoration: PickerDecoration(
-            actionBarPosition: ActionBarPosition.top,
             blurStrength: 2,
-            completeText: 'Next',
           ),
         );
       },
