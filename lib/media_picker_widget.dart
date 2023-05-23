@@ -17,9 +17,6 @@ import 'src/widgets/loading_widget.dart';
 import 'src/widgets/no_media.dart';
 
 part 'src/enums.dart';
-
 part 'src/media.dart';
-
 part 'src/media_picker.dart';
-
 part 'src/picker_decoration.dart';

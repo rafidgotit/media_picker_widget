@@ -41,3 +41,11 @@
 
 * Fix Breaking Changes.
 * Flutter 3.0 fix
+
+## 1.0.0
+
+* Flutter 3.10 support
+* Removed support for older than `flutter 2.12.0`
+* Performance Optimizations
+* Memory Leak & Crash Fix
+* Custom Header Builder Added

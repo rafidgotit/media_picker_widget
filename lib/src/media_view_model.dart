@@ -1,6 +1,4 @@
-import 'dart:io';
 import 'dart:typed_data';
-import 'dart:ui';
 
 import 'package:media_picker_widget/media_picker_widget.dart';
 
