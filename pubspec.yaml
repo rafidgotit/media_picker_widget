@@ -1,10 +1,10 @@
 name: media_picker_widget
 description: A widget that picks media files from storage and allows you to place anywhere in the widget tree.
-version: 1.0.0
+version: 1.0.1
 homepage: https://github.com/rafid08/media_picker_widget
 
 environment:
-  sdk: ">=2.12.0 <=3.0.1"
+  sdk: ">=2.12.0 <=3.10.1"
   flutter: ">=1.17.0"
 
 dependencies:
