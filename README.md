@@ -13,7 +13,7 @@
 ## Install
 Add to `pubspec.yaml`.
 
-The latest version is   [![Build](https://img.shields.io/badge/pub-v1.0.1-%23009F00)](https://pub.dev/packages/media_picker_widget)
+The latest version is   [![Build](https://img.shields.io/badge/pub-v1.0.2-%23009F00)](https://pub.dev/packages/media_picker_widget)
 
 ```
 media_picker_widget: $latest_version
@@ -44,7 +44,7 @@ In your widget tree, simple add the `MediaPicker` class that extends `StatefulWi
 ```
 MediaPicker(
   mediaList: mediaList, //let MediaPicker know which medias are already selected by passing the previous mediaList
-  onPick: (selectedList){
+  onPicked: (selectedList){
     print('Got Media ${selectedList.length}');
   },
   onCancel: ()=> print('Canceled'),

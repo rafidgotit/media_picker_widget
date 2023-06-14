@@ -31,10 +31,11 @@ class _MediaListState extends State<MediaList> {
   var _currentPage = 0;
   late var _lastPage = _currentPage;
   late AssetPathEntity _album = widget.album;
-  late final _selectedMedias = [...widget.previousList];
+  List<MediaViewModel> _selectedMedias = [];
 
   @override
   void initState() {
+    _selectedMedias = [...widget.previousList];
     _fetchNewMedia(refresh: true);
     super.initState();
   }
@@ -132,11 +133,15 @@ class _MediaListState extends State<MediaList> {
   }
 
   void _onMediaTileSelected(bool isSelected, MediaViewModel media) {
-    if (isSelected) {
-      setState(() => _selectedMedias.add(media));
-    } else {
-      setState(
-          () => _selectedMedias.removeWhere((_media) => _media.id == media.id));
+    if(widget.mediaCount==MediaCount.single){
+      _selectedMedias = [media];
+    }
+    else {
+      if (isSelected) {
+        setState(() => _selectedMedias.add(media));
+      } else {
+        setState(() => _selectedMedias.removeWhere((_media) => _media.id == media.id));
+      }
     }
     widget.onMediaTilePressed(media, _selectedMedias);
   }

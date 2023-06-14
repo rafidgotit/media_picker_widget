@@ -80,10 +80,10 @@ class _MyHomePageState extends State<MyHomePage> {
           mediaList: mediaList,
           onPicked: (selectedList) {
             setState(() => mediaList = selectedList);
-            Navigator.pop(context);
+            // Navigator.pop(context);
           },
           onCancel: () => Navigator.pop(context),
-          mediaCount: MediaCount.multiple,
+          mediaCount: MediaCount.single,
           mediaType: MediaType.all,
           decoration: PickerDecoration(
             blurStrength: 2,

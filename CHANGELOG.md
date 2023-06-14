@@ -52,3 +52,8 @@
 ## 1.0.1
 
 * Flutter 3.10 support
+
+## 1.0.2
+
+* Single Image Picker Bug Fix
+* Updated Documentation
