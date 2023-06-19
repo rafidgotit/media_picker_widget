@@ -61,3 +61,4 @@
 ## 1.0.3
 
 * Selection Counter
+* Updated OnCancel Callback as optional

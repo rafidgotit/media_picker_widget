@@ -13,7 +13,7 @@ class MediaPicker extends StatefulWidget {
   MediaPicker({
     required this.onPicked,
     required this.mediaList,
-    required this.onCancel,
+    this.onCancel,
     this.mediaCount = MediaCount.multiple,
     this.mediaType = MediaType.all,
     this.decoration,
