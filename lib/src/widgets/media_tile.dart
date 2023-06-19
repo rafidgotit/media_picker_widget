@@ -14,6 +14,7 @@ class MediaTile extends StatelessWidget {
     required this.onSelected,
     this.onThumbnailLoad,
     this.isSelected = false,
+    this.selectionIndex,
     required this.decoration,
   }) : super(key: key);
 
@@ -22,6 +23,7 @@ class MediaTile extends StatelessWidget {
   final bool isSelected;
   final PickerDecoration decoration;
   final ValueChanged<Uint8List?>? onThumbnailLoad;
+  final int? selectionIndex;
 
   final Duration _duration = Duration(milliseconds: 200);
 
@@ -122,11 +124,18 @@ class MediaTile extends StatelessWidget {
                           shape: BoxShape.circle,
                         ),
                         padding: const EdgeInsets.all(5),
-                        child: Icon(
+                        child: selectionIndex==null ? Icon(
                           Icons.done,
                           size: 16,
                           color: Colors.white,
-                        ),
+                        ) : Text(
+                          selectionIndex.toString(),
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        )
                       ),
                     ),
                   ),

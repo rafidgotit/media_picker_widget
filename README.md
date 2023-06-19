@@ -13,7 +13,7 @@
 ## Install
 Add to `pubspec.yaml`.
 
-The latest version is   [![Build](https://img.shields.io/badge/pub-v1.0.2-%23009F00)](https://pub.dev/packages/media_picker_widget)
+The latest version is   [![Build](https://img.shields.io/badge/pub-v1.0.3-%23009F00)](https://pub.dev/packages/media_picker_widget)
 
 ```
 media_picker_widget: $latest_version

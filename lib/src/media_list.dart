@@ -73,6 +73,7 @@ class _MediaListState extends State<MediaList> {
           },
           onSelected: _onMediaTileSelected,
           isSelected: _isPreviouslySelected(_mediaList[index]),
+          selectionIndex: _getSelectionIndex(_mediaList[index]),
           decoration: widget.decoration,
         ),
       ),
@@ -130,6 +131,12 @@ class _MediaListState extends State<MediaList> {
 
   bool _isPreviouslySelected(MediaViewModel media) {
     return _selectedMedias.any((element) => element.id == media.id);
+  }
+
+  int? _getSelectionIndex(MediaViewModel media) {
+    var index = _selectedMedias.indexWhere((element) => element.id == media.id);
+    if (index == -1) return null;
+    return index + 1;
   }
 
   void _onMediaTileSelected(bool isSelected, MediaViewModel media) {

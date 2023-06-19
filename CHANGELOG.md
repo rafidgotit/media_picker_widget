@@ -57,3 +57,7 @@
 
 * Single Image Picker Bug Fix
 * Updated Documentation
+
+## 1.0.3
+
+* Selection Counter
