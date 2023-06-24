@@ -1,22 +1,36 @@
 # media_picker_widget
-[![Build](https://img.shields.io/badge/pub-v0.0.8-%23009F00)](https://pub.dev/packages/media_picker_widget)
+
+[![Build](https://img.shields.io/badge/pub-v1.0.4-%23009F00)](https://pub.dev/packages/media_picker_widget)
 [![Build](https://img.shields.io/badge/licence-MIT-%23f16f12)](https://github.com/rafid08/media_picker_widget/blob/master/LICENSE)
 
+A widget that picks media files from storage and allows you to place it anywhere in the widget tree. You can use this widget in a dialog, bottom sheet, or anywhere else as you wish. It supports picking single or multiple images or videos. Use the `PickerDecoration` class to decorate the UI.
 
- A widget that picks media files from storage and allows you to place anywhere in the widget tree. You can place use this widget in dialog, bottomsheet or anywhere as you wish. You can pick single or multiple images or videos. Use `PickerDecoration` class to decorate the UI.
- 
-<p>
-  <img src="https://raw.githubusercontent.com/rafid08/media_picker_widget/master/resources/demo.gif" width=265/>
-</p>
+![Demo](https://raw.githubusercontent.com/rafid08/media_picker_widget/master/resources/demo.gif)
 
+If you find this widget useful, consider supporting the developer by [buying them a coffee](https://www.buymeacoffee.com/rafid).
 
-## Install
-Add to `pubspec.yaml`.
+<a href="https://www.buymeacoffee.com/rafid" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-blue.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
-The latest version is   [![Build](https://img.shields.io/badge/pub-v1.0.3-%23009F00)](https://pub.dev/packages/media_picker_widget)
+## Installation
 
-```
+Add the following line to your `pubspec.yaml` file:
+
+```yaml
 media_picker_widget: $latest_version
+```
+The latest version of the package is   [![Build](https://img.shields.io/badge/pub-v1.0.4-%23009F00)](https://pub.dev/packages/media_picker_widget)
+
+### Android
+
+To use this widget on Android, you need to add the following permissions to your _AndroidManifest.xml_ file, located in `<project root>/android/app/src/main/AndroidManifest.xml`:
+```
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+```
+
+If your app targets `Android SDK 33`, as mentioned in the [Android 13 Behavior changes](https://developer.android.com/about/versions/13/behavior-changes-13), you have to add the following permissions as well:
+```
+<uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+<uses-permission android:name="android.permission.READ_MEDIA_VIDEO"/>
 ```
 
 ### iOS
@@ -32,16 +46,18 @@ Add the following keys to your _Info.plist_ file, located in `<project root>/ios
 * `NSCameraUsageDescription` - describe why your app needs access to the camera. This is called _Privacy - Camera Usage Description_ in the visual editor.
 * `NSMicrophoneUsageDescription` - describe why your app needs access to the microphone, if you intend to record videos. This is called _Privacy - Microphone Usage Description_ in the visual editor.
 
-And import in dart code:
+## Usage
+Firstly, import in dart code:
 ```
 import 'package:media_picker_widget/media_picker_widget.dart';
 ```
 
-## Usage
-For android, it requires `minSdkVersion 21`. Change this in `app/build.gradle`.
+To use the `media_picker_widget`, follow these steps:
 
-In your widget tree, simple add the `MediaPicker` class that extends `StatefulWidget` and you are good to go!
-```
+1. Make sure your app's `minSdkVersion` is set to `21` in the `app/build.gradle` file.
+
+2. Within your Flutter widget tree, simply add the `MediaPicker` widget, which extends `StatefulWidget`. Here's an example:
+```dart
 MediaPicker(
   mediaList: mediaList, //let MediaPicker know which medias are already selected by passing the previous mediaList
   onPicked: (selectedList){
@@ -53,6 +69,9 @@ MediaPicker(
   decoration: PickerDecoration(),
 )
 ```
+
+### Customization
+Customize the widget as needed. You can use the [`PickerDecoration`](https://pub.dev/documentation/media_picker_widget/latest/media_picker_widget/PickerDecoration-class.html) class to decorate the UI.
 
 ### Custom Header
 New header customization have been added. `MediaPicker` widget has `HeaderBuilder` property. You can pass a `HeaderBuilder` to customize the header. `HeaderBuilder` is a function that returns a `Widget`. You can use `HeaderBuilder` to customize the header as you wish. You can use `MediaPickerHeader` class to get the default header. `MediaPickerHeader` class has a `MediaPickerHeaderProps` class that takes `MediaPicker` properties as parameters. You can use `MediaPickerHeaderProps` class to customize the header. 
@@ -84,7 +103,7 @@ MediaPicker(
 ```
 
 
-For more Information about the Classes, Enums, Functions etc, visit API Reference.
+For more Information about the Classes, Enums, Functions etc, visit [API Reference](https://pub.dev/documentation/media_picker_widget/latest/).
 
 
 ## Dependencies

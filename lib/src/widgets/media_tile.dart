@@ -61,7 +61,7 @@ class MediaTile extends StatelessWidget {
                               ),
                               child: AnimatedScale(
                                 duration: _duration,
-                                scale: isSelected ? 1.2 : 1,
+                                scale: isSelected ? decoration.scaleAmount : 1,
                                 child: Image.memory(
                                   media.thumbnail!,
                                   fit: BoxFit.cover,
@@ -77,7 +77,7 @@ class MediaTile extends StatelessWidget {
                             duration: _duration,
                             child: ClipRect(
                               child: Container(
-                                color: Colors.black26,
+                                color: decoration.selectedColor,
                               ),
                             ),
                           ),
@@ -110,33 +110,28 @@ class MediaTile extends StatelessWidget {
                     ),
                   ),
                 ),
-                Align(
+                if(isSelected) decoration.counterBuilder?.call(context, selectionIndex) ?? Align(
                   alignment: Alignment.topRight,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: AnimatedOpacity(
-                      curve: Curves.easeOut,
-                      duration: _duration,
-                      opacity: isSelected ? 1 : 0,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).primaryColor,
-                          shape: BoxShape.circle,
-                        ),
-                        padding: const EdgeInsets.all(5),
-                        child: selectionIndex==null ? Icon(
-                          Icons.done,
-                          size: 16,
-                          color: Colors.white,
-                        ) : Text(
-                          selectionIndex.toString(),
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        )
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColor,
+                        shape: BoxShape.circle,
                       ),
+                      padding: const EdgeInsets.all(5),
+                      child: selectionIndex==null ? Icon(
+                        Icons.done,
+                        size: 16,
+                        color: Colors.white,
+                      ) : Text(
+                        selectionIndex.toString(),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      )
                     ),
                   ),
                 ),

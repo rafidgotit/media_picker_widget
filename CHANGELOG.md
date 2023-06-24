@@ -62,3 +62,8 @@
 
 * Selection Counter
 * Updated OnCancel Callback as optional
+
+## 1.0.4
+
+* Added Selection Counter Customization as `counterBuilder` property in `PickerDecoration` class
+* Added `selectedColor` & `scaleAmount` property in `PickerDecoration` class

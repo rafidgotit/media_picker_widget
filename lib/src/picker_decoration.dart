@@ -8,6 +8,12 @@ class PickerDecoration {
   ///Blur amount on select media
   final double blurStrength;
 
+  ///Scale Amount of selected media
+  final double scaleAmount;
+
+  ///Color of selected media
+  final Color selectedColor;
+
   ///assign number of Columns of Media Grid
   final int columnCount;
 
@@ -38,6 +44,11 @@ class PickerDecoration {
   ///loading widget to be used as media place holder until media loads
   final Widget? loadingWidget;
 
+  ///[counterBuilder] is used to customize the selection counter on picked media in the list. As it is placed in [Stack] widget, you can use [Positioned]/[Align] widget to position it.
+  ///[context] is the BuildContext of picker header
+  ///[index] is the index of selected media in the list. Show nothing if it is null
+  final Function(BuildContext context, int? index)? counterBuilder;
+
   ///If the file is video, a duration will be shown on media list. You can customize it using this builder
   final Function(BuildContext context, String? duration)? videoDurationBuilder;
 
@@ -47,6 +58,7 @@ class PickerDecoration {
     this.cancelIcon,
     this.columnCount = 3,
     this.blurStrength = 10,
+    this.scaleAmount = 1.2,
     this.albumTitleStyle,
     this.completeText = 'Continue',
     this.completeTextStyle,
@@ -56,5 +68,7 @@ class PickerDecoration {
     this.albumCountTextStyle,
     this.noMedia,
     this.videoDurationBuilder,
+    this.counterBuilder,
+    this.selectedColor = Colors.black26,
   });
 }

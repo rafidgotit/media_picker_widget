@@ -86,7 +86,28 @@ class _MyHomePageState extends State<MyHomePage> {
           mediaCount: MediaCount.multiple,
           mediaType: MediaType.all,
           decoration: PickerDecoration(
-            blurStrength: 2,
+            blurStrength: 0,
+            scaleAmount: 1,
+            counterBuilder: (context, index){
+              if(index==null) return const SizedBox();
+              return Align(
+                alignment: Alignment.topRight,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.green,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  padding: const EdgeInsets.all(4),
+                  child: Text(
+                    '$index',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              );
+            },
           ),
         );
       },
