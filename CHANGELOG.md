@@ -67,3 +67,7 @@
 
 * Added Selection Counter Customization as `counterBuilder` property in `PickerDecoration` class
 * Added `selectedColor` & `scaleAmount` property in `PickerDecoration` class
+* 
+## 1.0.5
+
+* Dependency Updated

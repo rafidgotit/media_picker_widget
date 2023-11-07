@@ -3,8 +3,7 @@ import 'dart:typed_data';
 import 'package:media_picker_widget/media_picker_widget.dart';
 
 ///This class will contain the necessary data for viewing list of media
-class MediaViewModel{
-
+class MediaViewModel {
   ///Unique id to identify
   final String id;
 

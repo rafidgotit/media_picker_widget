@@ -86,9 +86,9 @@ class HeaderState extends State<Header> with TickerProviderStateMixin {
           AnimatedSwitcher(
             duration: Duration(milliseconds: 200),
             transitionBuilder: (
-                Widget child,
-                Animation<double> animation,
-                ) {
+              Widget child,
+              Animation<double> animation,
+            ) {
               return SlideTransition(
                 child: child,
                 position: Tween<Offset>(
@@ -109,8 +109,7 @@ class HeaderState extends State<Header> with TickerProviderStateMixin {
               angle: _arrowAnimation.value * pi,
               child: Icon(
                 Icons.keyboard_arrow_up_outlined,
-                size: (widget.decoration.albumTitleStyle?.fontSize) !=
-                    null
+                size: (widget.decoration.albumTitleStyle?.fontSize) != null
                     ? widget.decoration.albumTitleStyle!.fontSize! * 1.5
                     : 20,
                 color: widget.decoration.albumTitleStyle?.color ??
@@ -134,8 +133,9 @@ class HeaderState extends State<Header> with TickerProviderStateMixin {
       widget.onBack();
     };
 
-    if(widget.headerBuilder != null) {
-      return widget.headerBuilder!(context, albumPicker, onSelectionDone, onBack);
+    if (widget.headerBuilder != null) {
+      return widget.headerBuilder!(
+          context, albumPicker, onSelectionDone, onBack);
     }
 
     return SizedBox(

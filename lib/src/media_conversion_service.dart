@@ -3,10 +3,10 @@ import 'package:photo_manager/photo_manager.dart';
 
 import 'media_view_model.dart';
 
-abstract class MediaConversionService{
+abstract class MediaConversionService {
   static Future<Media> toMedia(MediaViewModel data, int index) async {
     var asset = await AssetEntity.fromId(data.id);
-    if(asset == null) throw Exception('Asset not found');
+    if (asset == null) throw Exception('Asset not found');
     var media = Media(
       id: data.id,
       index: index,
@@ -27,11 +27,11 @@ abstract class MediaConversionService{
 
   static Future<List<Media>> toMediaList(List<MediaViewModel> data) async {
     var conversionTasks = <Future<Media>>[];
-    for(int i=0; i<data.length; i++){
+    for (int i = 0; i < data.length; i++) {
       conversionTasks.add(toMedia(data[i], i));
     }
     var results = await Future.wait(conversionTasks);
-    results.sort((a, b) => (a.index??0).compareTo(b.index??0));
+    results.sort((a, b) => (a.index ?? 0).compareTo(b.index ?? 0));
     return results;
   }
 

@@ -57,17 +57,19 @@ class _MyHomePageState extends State<MyHomePage> {
         shrinkWrap: true,
         children: List.generate(
             mediaList.length,
-                (index) => Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SizedBox(
-                height: 80,
-                width: 80,
-                child: mediaList[index].thumbnail==null ? const SizedBox() : Image.memory(
-                  mediaList[index].thumbnail!,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            )),
+            (index) => Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SizedBox(
+                    height: 80,
+                    width: 80,
+                    child: mediaList[index].thumbnail == null
+                        ? const SizedBox()
+                        : Image.memory(
+                            mediaList[index].thumbnail!,
+                            fit: BoxFit.cover,
+                          ),
+                  ),
+                )),
       ),
     );
   }
@@ -88,8 +90,8 @@ class _MyHomePageState extends State<MyHomePage> {
           decoration: PickerDecoration(
             blurStrength: 0,
             scaleAmount: 1,
-            counterBuilder: (context, index){
-              if(index==null) return const SizedBox();
+            counterBuilder: (context, index) {
+              if (index == null) return const SizedBox();
               return Align(
                 alignment: Alignment.topRight,
                 child: Container(
