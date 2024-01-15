@@ -1,6 +1,6 @@
 # media_picker_widget
 
-[![Build](https://img.shields.io/badge/pub-v1.0.6-%23009F00)](https://pub.dev/packages/media_picker_widget)
+[![Build](https://img.shields.io/badge/pub-v1.0.8-%23009F00)](https://pub.dev/packages/media_picker_widget)
 [![Build](https://img.shields.io/badge/licence-MIT-%23f16f12)](https://github.com/rafidgotit/media_picker_widget/blob/master/LICENSE)
 
 A widget that picks media files from storage and allows you to place it anywhere in the widget tree. You can use this widget in a dialog, bottom sheet, or anywhere else as you wish. It supports picking single or multiple images or videos. Use the `PickerDecoration` class to decorate the UI.
@@ -18,7 +18,7 @@ Add the following line to your `pubspec.yaml` file:
 ```yaml
 media_picker_widget: $latest_version
 ```
-The latest version of the package is   [![Build](https://img.shields.io/badge/pub-v1.0.6-%23009F00)](https://pub.dev/packages/media_picker_widget)
+The latest version of the package is   [![Build](https://img.shields.io/badge/pub-v1.0.8-%23009F00)](https://pub.dev/packages/media_picker_widget)
 
 ### Android
 

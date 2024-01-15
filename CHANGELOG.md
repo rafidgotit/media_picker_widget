@@ -75,3 +75,14 @@
 ## 1.0.6
 
 * Dependency Updated
+
+## 1.0.7
+
+* Dependency Updated
+
+## 1.0.8-pre.1
+
+
+* Dependency Updated
+
+* Limited Permission option added `allowLimitedPermission`
