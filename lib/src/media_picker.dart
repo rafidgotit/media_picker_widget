@@ -5,8 +5,8 @@ part of media_picker_widget;
 ///[albumSelector] is the widget that will show the album selector, you can use it to show album selector in your custom header. Use [PickerDecoration] to customize it.
 ///[completeSelection] is called when selection is done. If you want a button for user to confirm selection, you can use it. It will trigger [MediaPicker.onPicked] callback. Note: If MediaPicker's media count is [MediaCount.single], It won't ask for confirmation.
 ///[onBack] is the callback when user press back button. It will close album selector if it is open. Else your [MediaPicker.onCancel] callback will be called.
-typedef HeaderBuilder = Function(BuildContext context, Widget albumSelector,
-    VoidCallback completeSelection, VoidCallback onBack);
+typedef HeaderBuilder = Function(
+    BuildContext context, Widget albumSelector, VoidCallback completeSelection, VoidCallback onBack);
 
 ///The MediaPicker widget that will select media files form storage
 class MediaPicker extends StatefulWidget {
@@ -65,9 +65,7 @@ class _MediaPickerState extends State<MediaPicker> {
   final _headerController = GlobalKey<HeaderState>();
 
   AssetPathEntity? _selectedAlbum;
-  late List<MediaViewModel> _selectedMedias = [
-    ...MediaConversionService.toMediaViewList(widget.mediaList)
-  ];
+  late List<MediaViewModel> _selectedMedias = [...MediaConversionService.toMediaViewList(widget.mediaList)];
 
   Future<List<AssetPathEntity>> _fetchAlbums() async {
     var type = RequestType.common;
@@ -80,10 +78,11 @@ class _MediaPickerState extends State<MediaPicker> {
     }
 
     final result = await PhotoManager.requestPermissionExtend();
-    if(!widget.allowLimitedPermission && result == PermissionState.limited) {
+    if (!widget.allowLimitedPermission && result == PermissionState.limited) {
       PhotoManager.openSetting();
       return [];
-    } else if (result == PermissionState.authorized || (result == PermissionState.limited && widget.allowLimitedPermission)) {
+    } else if (result == PermissionState.authorized ||
+        (result == PermissionState.limited && widget.allowLimitedPermission)) {
       return await PhotoManager.getAssetPathList(type: type);
     } else {
       PhotoManager.openSetting();
@@ -91,8 +90,7 @@ class _MediaPickerState extends State<MediaPicker> {
     }
   }
 
-  Future _onMediaTilePressed(
-      MediaViewModel media, List<MediaViewModel> selectedMedias) async {
+  Future _onMediaTilePressed(MediaViewModel media, List<MediaViewModel> selectedMedias) async {
     _headerController.currentState?.updateSelection(selectedMedias);
 
     setState(() {
@@ -179,8 +177,7 @@ class _MediaPickerState extends State<MediaPicker> {
                 ],
               ),
             ),
-            if (_decoration.actionBarPosition == ActionBarPosition.bottom)
-              header,
+            if (_decoration.actionBarPosition == ActionBarPosition.bottom) header,
           ],
         );
       }
@@ -198,9 +195,13 @@ class _MediaPickerState extends State<MediaPicker> {
 void openCamera({
   ///callback when capturing is done
   required ValueChanged<Media> onCapture,
+  CameraDevice preferredCameraDevice = CameraDevice.rear,
 }) async {
   final picker = ImagePicker();
-  final pickedFile = await picker.pickImage(source: ImageSource.camera);
+  final pickedFile = await picker.pickImage(
+    source: ImageSource.camera,
+    preferredCameraDevice: preferredCameraDevice,
+  );
 
   if (pickedFile != null) {
     final converted = Media(
