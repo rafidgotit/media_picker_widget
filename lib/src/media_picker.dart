@@ -208,6 +208,7 @@ void openCamera({
       creationTime: DateTime.now(),
       mediaByte: await pickedFile.readAsBytes(),
       title: 'capturedImage',
+      file: File(pickedFile.path),
     );
 
     onCapture(converted);
