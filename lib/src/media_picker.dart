@@ -5,7 +5,8 @@ part of media_picker_widget;
 ///[albumSelector] is the widget that will show the album selector, you can use it to show album selector in your custom header. Use [PickerDecoration] to customize it.
 ///[completeSelection] is called when selection is done. If you want a button for user to confirm selection, you can use it. It will trigger [MediaPicker.onPicked] callback. Note: If MediaPicker's media count is [MediaCount.single], It won't ask for confirmation.
 ///[onBack] is the callback when user press back button. It will close album selector if it is open. Else your [MediaPicker.onCancel] callback will be called.
-typedef HeaderBuilder = Function(BuildContext context, Widget albumSelector, VoidCallback completeSelection, VoidCallback onBack);
+typedef HeaderBuilder = Function(
+    BuildContext context, Widget albumSelector, VoidCallback completeSelection, VoidCallback onBack);
 
 ///The MediaPicker widget that will select media files form storage
 class MediaPicker extends StatefulWidget {
@@ -14,6 +15,7 @@ class MediaPicker extends StatefulWidget {
     required this.onPicked,
     required this.mediaList,
     this.onCancel,
+    this.onAccessDenied,
     this.mediaCount = MediaCount.multiple,
     this.mediaType = MediaType.all,
     this.decoration,
@@ -31,6 +33,9 @@ class MediaPicker extends StatefulWidget {
 
   ///Callback on cancel the picking action
   final VoidCallback? onCancel;
+
+  ///Callback if user denies gallery permission
+  final VoidCallback? onAccessDenied;
 
   ///make picker to select multiple or single media file
   final MediaCount mediaCount;
@@ -80,10 +85,15 @@ class _MediaPickerState extends State<MediaPicker> {
     if (!widget.allowLimitedPermission && result == PermissionState.limited) {
       PhotoManager.openSetting();
       return [];
-    } else if (result == PermissionState.authorized || (result == PermissionState.limited && widget.allowLimitedPermission)) {
+    } else if (result == PermissionState.authorized ||
+        (result == PermissionState.limited && widget.allowLimitedPermission)) {
       return await PhotoManager.getAssetPathList(type: type);
     } else {
-      PhotoManager.openSetting();
+      if (widget.onAccessDenied != null) {
+        widget.onAccessDenied?.call();
+      } else {
+        PhotoManager.openSetting();
+      }
       return [];
     }
   }
