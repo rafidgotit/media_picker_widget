@@ -1,44 +1,44 @@
 part of media_picker_widget;
 
-///This class will contain the necessary data of selected media
+/// This class will contain the necessary data of selected media
 class Media {
-  ///File saved on local storage
+  /// File saved on local storage
   final File? file;
 
-  ///Unique id to identify
+  /// Unique id to identify
   final String id;
 
-  ///A low resolution image to show as preview
+  /// A low resolution image to show as preview
   final Uint8List? thumbnail;
 
-  ///The image file in bytes format
+  /// The image file in bytes format
   final Uint8List? mediaByte;
 
-  ///Image Dimensions
+  /// Image Dimensions
   final Size? size;
 
-  ///Creation time of the media file on local storage
+  /// Creation time of the media file on local storage
   final DateTime? creationTime;
 
-  ///Last modified time of the media file on local storage
+  /// Last modified time of the media file on local storage
   final DateTime? modifiedTime;
 
-  ///media name or title
+  /// Media name or title
   final String? title;
 
-  ///latitude of the media file
+  /// Latitude of the media file
   final double? latitude;
 
-  ///longitude of the media file
+  /// Longitude of the media file
   final double? longitude;
 
-  ///Type of the media, Image/Video
+  /// Type of the media, Image/Video
   final MediaType? mediaType;
 
-  ///Duration of the video
+  /// Duration of the video
   final Duration? videoDuration;
 
-  ///Index of selected image
+  /// Index of selected image
   final int? index;
 
   Media({

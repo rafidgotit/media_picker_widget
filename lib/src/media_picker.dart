@@ -1,16 +1,20 @@
 part of media_picker_widget;
 
-///[HeaderBuilder] is used to build custom header for picker
-///[context] is the BuildContext of picker header
-///[albumSelector] is the widget that will show the album selector, you can use it to show album selector in your custom header. Use [PickerDecoration] to customize it.
-///[completeSelection] is called when selection is done. If you want a button for user to confirm selection, you can use it. It will trigger [MediaPicker.onPicked] callback. Note: If MediaPicker's media count is [MediaCount.single], It won't ask for confirmation.
-///[onBack] is the callback when user press back button. It will close album selector if it is open. Else your [MediaPicker.onCancel] callback will be called.
+/// [HeaderBuilder] is used to build custom header for picker
+/// [context] is the BuildContext of picker header
+/// [albumSelector] is the widget that will show the album selector, you can use it to show album selector in your custom header. Use [PickerDecoration] to customize it.
+/// [completeSelection] is called when selection is done. If you want a button for user to confirm selection, you can use it. It will trigger [MediaPicker.onPicked] callback. Note: If MediaPicker's media count is [MediaCount.single], It won't ask for confirmation.
+/// [onBack] is the callback when user press back button. It will close album selector if it is open. Else your [MediaPicker.onCancel] callback will be called.
 typedef HeaderBuilder = Function(
-    BuildContext context, Widget albumSelector, VoidCallback completeSelection, VoidCallback onBack);
+  BuildContext context,
+  Widget albumSelector,
+  VoidCallback completeSelection,
+  VoidCallback onBack,
+);
 
-///The MediaPicker widget that will select media files form storage
+/// The MediaPicker widget that will select media files form storage
 class MediaPicker extends StatefulWidget {
-  ///The MediaPicker constructor that will select media files form storage
+  /// The MediaPicker constructor that will select media files form storage
   MediaPicker({
     required this.onPicked,
     required this.mediaList,
@@ -25,34 +29,34 @@ class MediaPicker extends StatefulWidget {
     this.allowLimitedPermission = true,
   });
 
-  ///CallBack on image pick is done
+  /// CallBack on image pick is done
   final ValueChanged<List<Media>> onPicked;
 
-  ///Previously selected list of media in your app
+  /// Previously selected list of media in your app
   final List<Media> mediaList;
 
-  ///Callback on cancel the picking action
+  /// Callback on cancel the picking action
   final VoidCallback? onCancel;
 
-  ///Callback if user denies gallery permission
+  /// Callback if user denies gallery permission
   final VoidCallback? onAccessDenied;
 
-  ///make picker to select multiple or single media file
+  /// Make picker to select multiple or single media file
   final MediaCount mediaCount;
 
-  ///Make picker to select specific type of media, video or image
+  /// Make picker to select specific type of media, video or image
   final MediaType mediaType;
 
-  ///decorate the UI of picker
+  /// Decorate the UI of picker
   final PickerDecoration? decoration;
 
-  ///assign a scroll controller to Media GridView of Picker
+  /// Assign a scroll controller to Media GridView of Picker
   final ScrollController? scrollController;
 
-  ///CallBack on image picking
+  /// CallBack on image picking
   final ValueChanged<List<Media>>? onPicking;
 
-  ///Custom Header Builder
+  /// Custom Header Builder
   final HeaderBuilder? headerBuilder;
 
   /// If true, the picker will allow picking media even if the permission is limited.
@@ -199,9 +203,9 @@ class _MediaPickerState extends State<MediaPicker> {
   }
 }
 
-///call this function to capture and get media from camera
+/// Call this function to capture and get media from camera
 void openCamera({
-  ///callback when capturing is done
+  /// Callback when capturing is done
   required ValueChanged<Media> onCapture,
   CameraDevice preferredCameraDevice = CameraDevice.rear,
 }) async {
